@@ -1,0 +1,482 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0B1F3A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Solenta">
+<title>Solenta Aviation</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230B1F3A'/%3E%3Cpath d='M16 40l32-10-4-4-12 3-8-8h-4l5 10-6 3z' fill='%23F5A524'/%3E%3C/svg%3E">
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:#E9EDF2;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:#0B1F3A}
+a{color:inherit;text-decoration:none}
+button,input,select,textarea{font-family:inherit;color:#0B1F3A}
+button{cursor:pointer}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+#wrap{max-width:480px;margin:0 auto;min-height:100vh;background:#F3F5F8;padding-bottom:calc(100px + env(safe-area-inset-bottom))}
+.hd{background:#0B1F3A;color:#fff;padding:calc(16px + env(safe-area-inset-top)) 16px 16px}
+.hd .ttl{font-size:22px;font-weight:700;line-height:1.15}
+.hd .sub{font-size:12px;color:#C3CEDD;margin-top:3px}
+.top{display:flex;align-items:center;justify-content:space-between}
+.logo{width:38px;height:38px;border-radius:10px;background:#F5A524;display:flex;align-items:center;justify-content:center}
+.row{display:flex;align-items:center}.sb{justify-content:space-between}.g8{gap:8px}.g10{gap:10px}.g16{gap:16px}.base{align-items:baseline}
+.rbtn,.me,.iconbtn{position:relative;height:44px;border-radius:22px;border:0;background:#163058;color:#fff;display:flex;align-items:center;justify-content:center}
+.rbtn,.iconbtn{width:44px}
+.me{padding:0 12px 0 6px;gap:8px;font-size:13px;font-weight:600}
+.av{width:32px;height:32px;border-radius:16px;background:#F5A524;color:#0B1F3A;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
+.badge{position:absolute;top:3px;right:1px;min-width:18px;height:18px;border-radius:9px;background:#F5A524;color:#0B1F3A;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 4px}
+.body{padding:14px 16px 0;display:flex;flex-direction:column;gap:10px}
+.tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.tile{background:#fff;border:1px solid #E3E8EE;border-radius:12px;padding:10px 10px 8px}
+.tile b{display:block;font-size:22px;line-height:1.1}.tile span{font-size:11px;color:#5B6778}
+.tile.red{background:#FDECEA;border-color:#F3C2BC}.tile.red b,.tile.red span{color:#8F1B11}
+.search{display:flex;align-items:center;gap:10px;height:46px;background:#fff;border:1px solid #D5DCE5;border-radius:12px;padding:0 14px;color:#5B6778}
+.search input{flex:1;border:0;outline:0;background:transparent;font-size:15px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px}
+.chip{flex:none;height:36px;padding:0 14px;border-radius:18px;border:1px solid #D5DCE5;background:#fff;font-size:13px;font-weight:500}
+.chip.on{background:#0B1F3A;border-color:#0B1F3A;color:#fff;font-weight:600}
+.seg{display:flex;background:#E3E8EE;border-radius:12px;padding:3px}
+.seg button{flex:1;height:38px;border:0;border-radius:10px;background:transparent;font-size:14px;font-weight:500;color:#3B4658}
+.seg button.on{background:#fff;color:#0B1F3A;font-weight:700}
+.card{background:#fff;border:1px solid #E3E8EE;border-radius:14px}
+.ac{display:flex;overflow:hidden}.ac>i{width:6px;flex:none}.ac .in{flex:1;padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.big{font-size:17px}.mut{color:#5B6778;font-size:13px}
+.meta{font-size:13px;color:#4A5668;flex-wrap:wrap}.meta span{display:inline-flex;align-items:center;gap:5px}.meta b{color:#0B1F3A}
+.pill{display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 10px;border-radius:13px;font-size:12px;font-weight:700;white-space:nowrap}
+.pill.aog{background:#B42318;color:#fff}.pill.ltd{background:#FFF0CC;color:#6B4000}.pill.ok{background:#E2F3E9;color:#0C5C34}
+.tag{display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:11px;font-size:11px;font-weight:700;flex:none}
+.tag.hi{background:#B42318;color:#fff}.tag.md{background:#FFF0CC;color:#6B4000}.tag.lo{background:#E8ECF1;color:#3B4658}
+.srow{display:flex;flex-direction:column;gap:8px;padding:12px 14px}
+.srow .t{font-size:15px;font-weight:600;line-height:1.3}
+.srow .m{font-size:12px;color:#4A5668;display:flex;align-items:center;gap:8px;flex-wrap:wrap}.srow .m b{color:#0B1F3A}
+.sec{padding:12px 14px}
+.sec h3{margin:0 0 4px;font-size:15px}.sec h3 small{color:#5B6778;font-weight:500;font-size:15px}
+.line{display:flex;align-items:center;gap:10px;min-height:48px;border-top:1px solid #EDF0F4;padding-top:8px;margin-top:6px}
+.line .g{flex:1;min-width:0}.line .n{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.line .s{font-size:12px;color:#5B6778}
+.link{font-size:13px;font-weight:600;text-decoration:underline;background:none;border:0;padding:0}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:#E3E8EE;border:1px solid #E3E8EE;border-radius:14px;overflow:hidden}
+.stats div{background:#fff;padding:10px 12px}.stats small{display:block;font-size:11px;color:#5B6778}.stats b{display:block;font-size:14px;margin-top:3px}
+.back{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.pbar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}.pbar i{height:6px;border-radius:3px;background:#D5DCE5}.pbar i.f{background:#0B1F3A}
+.btn{height:50px;border-radius:14px;border:0;background:#F5A524;color:#0B1F3A;font-size:15px;font-weight:700;padding:0 18px}
+.btn.o{background:#fff;border:2px solid #0B1F3A}.btn.sm{height:40px;font-size:13px;border-radius:10px;padding:0 14px}
+.bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:#fff;border-top:1px solid #DDE3EA;display:flex;gap:10px;padding:10px 16px calc(12px + env(safe-area-inset-bottom))}
+.bar .btn{flex:1;display:flex;align-items:center;justify-content:center}
+nav.bar{padding:6px 6px calc(8px + env(safe-area-inset-bottom));gap:0;height:auto}
+nav a{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;color:#4A5668;font-weight:500}
+nav a span{width:54px;height:30px;border-radius:15px;display:flex;align-items:center;justify-content:center}
+nav a.on{color:#0B1F3A;font-weight:700}nav a.on span{background:#FCE9C2}
+nav a.add span{width:48px;height:48px;margin-top:-16px;border-radius:24px;background:#F5A524;border:3px solid #fff;color:#0B1F3A}
+nav a.add{color:#0B1F3A;font-weight:700}
+label.f{display:block;font-size:12px;font-weight:700;color:#3B4658;margin-bottom:5px}
+.in1,select.in1,textarea.in1{width:100%;height:48px;border:1px solid #C9D1DC;border-radius:12px;background:#fff;padding:0 12px;font-size:15px}
+textarea.in1{height:88px;padding:10px 12px;line-height:1.4;resize:none}
+.two{display:flex;gap:10px}.two>div{flex:1}
+.pri{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.pri button{height:46px;border-radius:12px;border:1px solid #C9D1DC;background:#fff;font-size:14px;font-weight:500}
+.pri button.on{background:#0B1F3A;border-color:#0B1F3A;color:#fff;font-weight:700}
+.pri button.on.hi{background:#B42318;border-color:#B42318}
+.sw{position:relative;width:48px;height:28px;display:inline-block;flex:none}
+.sw input{opacity:0;position:absolute;inset:0;width:100%;height:100%;margin:0;z-index:2}
+.sw span{position:absolute;inset:0;background:#9AA6B6;border-radius:14px}
+.sw span:after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:11px;background:#fff}
+.sw input:checked+span{background:#0B1F3A}.sw input:checked+span:after{left:23px;background:#F5A524}
+.photos{display:flex;gap:8px;flex-wrap:wrap}
+.ph{width:calc(33.3% - 6px);height:76px;border-radius:12px;background:#DDE3EA;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:12px;font-weight:600;color:#3B4658;overflow:hidden}
+.ph img{width:100%;height:100%;object-fit:cover}
+.ph.add{background:transparent;border:2px dashed #9AA6B6;color:#0B1F3A;cursor:pointer}
+.log{display:flex;gap:10px;margin-top:10px}.log i{width:8px;height:8px;border-radius:4px;background:#0B1F3A;margin-top:6px;flex:none}
+.log b{font-size:13px;display:block}.log small{font-size:12px;color:#5B6778}
+.week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.week div{background:#fff;border:1px solid #E3E8EE;border-radius:12px;padding:8px 0 6px;text-align:center;font-size:11px;color:#5B6778}
+.week div b{display:block;font-size:16px;color:#0B1F3A}.week div u{display:block;width:6px;height:6px;border-radius:3px;background:#0B1F3A;margin:3px auto 0}.week div s{display:block;height:9px}
+.week div.t{background:#0B1F3A;color:#fff}.week div.t b{color:#fff}.week div.t u{background:#F5A524}
+.dcard{padding:12px 14px;display:flex;flex-direction:column;gap:8px}.dcard.od{background:#FDECEA;border-color:#F3C2BC}
+.dbar{height:6px;border-radius:3px;background:#D5DCE5}.dbar i{display:block;height:6px;border-radius:3px}
+.empty{text-align:center;color:#5B6778;padding:30px 10px;font-size:14px}
+.note{font-size:12px;color:#5B6778;text-align:center;padding:14px 16px 0}
+.ov{position:fixed;inset:0;background:rgba(11,31,58,.55);z-index:50;display:flex;align-items:flex-end;justify-content:center}
+.ov[hidden]{display:none}
+.sheet{width:100%;max-width:480px;background:#fff;border-radius:20px 20px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:12px;max-height:90vh;overflow:auto}
+.sheet h2{margin:0;font-size:18px}
+.opt{display:flex;align-items:center;gap:10px;height:52px;border:1px solid #D5DCE5;border-radius:12px;background:#fff;padding:0 14px;font-size:15px;font-weight:500;width:100%;text-align:left}
+.opt.on{border-color:#0B1F3A;background:#FCE9C2;font-weight:700}
+#toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#0B1F3A;color:#fff;padding:12px 18px;border-radius:24px;font-size:14px;font-weight:600;z-index:60;box-shadow:0 4px 16px rgba(0,0,0,.25)}
+#toast[hidden]{display:none}
+</style>
+</head>
+<body>
+<div id="wrap"><div id="app"></div></div>
+<div class="ov" id="modal" hidden><div class="sheet" id="sheet"></div></div>
+<div id="toast" hidden></div>
+<script>
+(function () {
+'use strict';
+var KEY = 'solenta_demo_v1', DAYMS = 86400000;
+var MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+var DAYN = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+var ATA = ['21 Air conditioning','23 Communications','24 Electrical','25 Cabin and equipment','26 Fire protection','27 Flight controls','28 Fuel','29 Hydraulics','32 Landing gear','33 Lights','34 Navigation','35 Oxygen','52 Doors','61 Propeller','63 Rotors','71 Engine','Other'];
+var STAGES = ['Needed','Ordered','Shipped','Arrived'];
+var P = {
+ plane:'M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z',
+ bell:'M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.94 1.94 0 0 0 3.4 0',
+ wrench:'M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z',
+ box:'m7.5 4.27 9 5.15M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16zM3.3 7 12 12l8.7-5M12 22V12',
+ cal:'M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z',
+ plus:'M12 5v14M5 12h14', back:'m15 18-6-6 6-6', chev:'m9 18 6-6-6-6',
+ pin:'M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0zM12 7a3 3 0 1 0 0 6 3 3 0 0 0 0-6z',
+ cam:'M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3zM12 10a3 3 0 1 0 0 6 3 3 0 0 0 0-6z',
+ check:'M20 6 9 17l-5-5',
+ warn:'m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3M12 9v4M12 17h.01',
+ ban:'M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zM4.9 4.9l14.2 14.2',
+ clock:'M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zM12 6v6l4 2',
+ search:'M11 3a8 8 0 1 0 0 16 8 8 0 0 0 0-16zM21 21l-4.3-4.3',
+ x:'M18 6 6 18M6 6l12 12'
+};
+function ic(n, s, c) { return '<svg aria-hidden="true" width="' + (s || 18) + '" height="' + (s || 18) + '" viewBox="0 0 24 24" fill="none" stroke="' + (c || 'currentColor') + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="' + P[n] + '"/></svg>'; }
+function $(s) { return document.querySelector(s); }
+function esc(t) { return String(t == null ? '' : t).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+function today0() { var t = new Date(); t.setHours(0, 0, 0, 0); return t.getTime(); }
+function fdate(ts) { var d = new Date(ts); return d.getDate() + ' ' + MON[d.getMonth()]; }
+function ftime(ts) { var d = new Date(ts); return ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2); }
+function age(ts) { var n = Math.floor((Date.now() - ts) / DAYMS); return n <= 0 ? 'today' : n + ' d'; }
+function ago(ts) { var m = Math.round((Date.now() - ts) / 60000); if (m < 60) return Math.max(m, 1) + ' min ago'; var h = Math.round(m / 60); if (h < 24) return h + ' h ago'; return Math.round(h / 24) + ' d ago'; }
+function ini(n) { return String(n).split(/\s+/).map(function (w) { return w[0] || ''; }).join('').slice(0, 2).toUpperCase(); }
+
+/* ---------- sample data ---------- */
+function seed() {
+  var n = Date.now(), t0 = today0();
+  function d(x) { return n - x * DAYMS; }
+  function sn(id, ac, ata, title, pri, st, a, by, desc) { return { id: id, ac: ac, ata: ata, title: title, pri: pri, st: st, by: by, ts: d(a), desc: desc, photos: 0, log: [{ t: d(a), who: by, text: 'Snag reported' }] }; }
+  return {
+    me: 'A. Silva', engs: ['A. Silva', 'J. Costa', 'M. Sitoe'], seq: 152,
+    ac: [
+      { reg: 'C9-AEF', type: 'King Air 350', loc: 'Maputo', st: 'AOG', hrs: '6,402.1', cyc: '7,115' },
+      { reg: 'C9-ABD', type: 'Caravan 208B', loc: 'Afungi', st: 'Limited', hrs: '4,218.6', cyc: '5,902' },
+      { reg: 'C9-ABC', type: 'Caravan 208B', loc: 'Pemba', st: 'OK', hrs: '3,877.3', cyc: '5,240' },
+      { reg: 'C9-HAB', type: 'AS350 B3', loc: 'Pemba', st: 'OK', hrs: '2,950.0', cyc: '4,011' },
+      { reg: 'C9-HAA', type: 'AS350 B3', loc: 'Afungi', st: 'OK', hrs: '3,104.8', cyc: '4,376' }
+    ],
+    snags: [
+      sn('S-0151', 'C9-HAA', '33 Lights', 'Landing light inoperative', 'Low', 'Open', 1, 'A. Silva', 'Landing light does not come on. Bulb and fuse to be checked.'),
+      sn('S-0150', 'C9-HAB', '21 Air conditioning', 'Cabin heater fan noisy', 'Low', 'Open', 3, 'M. Sitoe', 'Fan whine when heater is on high.'),
+      sn('S-0149', 'C9-HAB', '63 Rotors', 'Rotor brake lever stiff', 'Low', 'Open', 5, 'J. Costa', 'Lever needs extra force to release.'),
+      sn('S-0148', 'C9-ABC', '32 Landing gear', 'LH main tyre worn near limit', 'Med', 'Open', 2, 'A. Silva', 'Tread close to wear limit on LH main tyre.'),
+      sn('S-0147', 'C9-ABC', '21 Air conditioning', 'Cabin air vent loose', 'Low', 'Open', 7, 'M. Sitoe', 'Vent at row 3 is loose in its housing.'),
+      sn('S-0146', 'C9-ABD', '33 Lights', 'Left nav light lens cracked', 'Low', 'Open', 1, 'A. Silva', 'Small crack in lens, light still works.'),
+      sn('S-0145', 'C9-ABD', '25 Cabin and equipment', 'Pax seat 3 recline stiff', 'Low', 'Open', 8, 'J. Costa', 'Recline lever stiff, needs lubrication.'),
+      sn('S-0144', 'C9-AEF', '35 Oxygen', 'Oxygen mask stowage latch stiff', 'Low', 'Open', 3, 'M. Sitoe', 'Latch needs force to open.'),
+      sn('S-0143', 'C9-AEF', '33 Lights', 'Cabin reading light flickers', 'Low', 'Open', 4, 'M. Sitoe', 'Row 2 reading light flickers when touched.'),
+      sn('S-0142', 'C9-ABD', '32 Landing gear', 'LH main gear door actuator leaking', 'High', 'Awaiting part', 3, 'A. Silva', 'Hydraulic fluid seen on the actuator rod after the last flight. Slow weep, about 1 cm wet area.'),
+      sn('S-0141', 'C9-AEF', '24 Electrical', 'Generator 2 output low in flight', 'High', 'Awaiting part', 2, 'A. Silva', 'Gen 2 load drops after 20 minutes in cruise. Control unit suspected.'),
+      sn('S-0140', 'C9-ABD', '52 Doors', 'Cabin door seal worn', 'Med', 'Awaiting part', 5, 'J. Costa', 'Seal is flattened and torn near the lower corner.'),
+      sn('S-0139', 'C9-AEF', '32 Landing gear', 'Nose gear steering shimmy on taxi', 'AOG', 'Awaiting part', 6, 'A. Silva', 'Shimmy felt above 20 kt on taxi. Play found in the damper.'),
+      sn('S-0137', 'C9-AEF', '25 Cabin and equipment', 'ELT battery due, low voltage', 'Med', 'Awaiting part', 9, 'J. Costa', 'ELT battery reached its limit. Replacement requested.'),
+      sn('S-0135', 'C9-ABC', '25 Cabin and equipment', 'Cabin carpet edge lifting', 'Low', 'Deferred', 12, 'J. Costa', 'Carpet edge lifting at the door. Deferred to next check.'),
+      sn('S-0130', 'C9-HAA', '23 Communications', 'Static wick missing', 'Low', 'Closed', 20, 'M. Sitoe', 'One static wick missing from the tail.')
+    ],
+    parts: [
+      { pn: '9901-302', desc: 'ELT battery', qty: 1, ac: 'C9-AEF', snag: 'S-0137', stage: 2, eta: '4 Nov' },
+      { pn: '2210-118-C', desc: 'Nose steering damper', qty: 1, ac: 'C9-AEF', snag: 'S-0139', stage: 2, eta: '5 Nov' },
+      { pn: '4410-221-A', desc: 'Gear door actuator', qty: 1, ac: 'C9-ABD', snag: 'S-0142', stage: 1, eta: '8 Nov' },
+      { pn: '3305-090', desc: 'Cabin door seal, 3 m', qty: 1, ac: 'C9-ABD', snag: 'S-0140', stage: 1, eta: '11 Nov' },
+      { pn: '7712-004', desc: 'Generator 2 control unit', qty: 1, ac: 'C9-AEF', snag: 'S-0141', stage: 0, eta: '' }
+    ],
+    due: [
+      { ac: 'C9-AEF', t: 'ELT battery change', due: t0 - 2 * DAYMS, pct: 100, n: '' },
+      { ac: 'C9-HAA', t: 'Compass swing', due: t0 + 3 * DAYMS, pct: 92, n: '' },
+      { ac: 'C9-ABD', t: '50 h inspection', due: t0 + 6 * DAYMS, pct: 76, n: '12 FH' },
+      { ac: 'C9-HAB', t: '100 h inspection', due: t0 + 14 * DAYMS, pct: 62, n: '38 FH' },
+      { ac: 'C9-ABC', t: 'Annual inspection', due: t0 + 21 * DAYMS, pct: 94, n: '' }
+    ],
+    alerts: [
+      { t: d(0.1), text: 'Part shipped: ELT battery, ETA 4 Nov', read: false },
+      { t: d(0.3), text: 'New snag S-0141 on C9-AEF: Generator 2 output low', read: false },
+      { t: d(1), text: 'ELT battery change is overdue on C9-AEF', read: false },
+      { t: d(2), text: 'Part ordered: Gear door actuator', read: true }
+    ]
+  };
+}
+var S = null;
+function load() { try { var r = localStorage.getItem(KEY); if (r) return JSON.parse(r); } catch (e) {} return null; }
+function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+S = load() || seed();
+
+var F = { fleet: 'all', q: '', seg: 'open', sf: 'all', sac: '', parts: 'all', due: 'all' };
+var PH = {};        // photo thumbnails kept in memory only
+var ADDPH = [];     // photos picked on the add screen
+var addPri = 'Med';
+var lastRoute = '';
+
+/* ---------- helpers ---------- */
+function openSnags(reg) { return S.snags.filter(function (s) { return s.st !== 'Closed' && s.st !== 'Deferred' && (!reg || s.ac === reg); }); }
+function openParts(reg) { return S.parts.filter(function (p) { return p.stage < 3 && (!reg || p.ac === reg); }); }
+var RANK = { AOG: 0, High: 1, Med: 2, Low: 3 };
+function bySev(a, b) { return (RANK[a.pri] - RANK[b.pri]) || (b.ts - a.ts); }
+function stPill(st) {
+  if (st === 'AOG') return '<span class="pill aog">' + ic('ban', 13, '#fff') + 'AOG</span>';
+  if (st === 'Limited') return '<span class="pill ltd">' + ic('warn', 13) + 'Limited</span>';
+  return '<span class="pill ok">' + ic('check', 13) + 'Serviceable</span>';
+}
+function priTag(p) { return '<span class="tag ' + (p === 'AOG' || p === 'High' ? 'hi' : p === 'Med' ? 'md' : 'lo') + '">' + esc(p) + '</span>'; }
+function chips(list, cur, key) {
+  return '<div class="chips">' + list.map(function (x) { return '<button type="button" class="chip' + (cur === x[0] ? ' on' : '') + '" data-act="f" data-k="' + key + '" data-v="' + x[0] + '">' + esc(x[1]) + '</button>'; }).join('') + '</div>';
+}
+function dueInfo(due) {
+  var days = Math.round((due - today0()) / DAYMS);
+  return { days: days, label: days < 0 ? 'Overdue ' + (-days) + ' d' : days === 0 ? 'Due today' : 'in ' + days + ' d' };
+}
+function toast(m) { var t = $('#toast'); t.textContent = m; t.hidden = false; clearTimeout(toast.h); toast.h = setTimeout(function () { t.hidden = true; }, 2200); }
+function modal(html) { $('#sheet').innerHTML = html; $('#modal').hidden = false; }
+function closeModal() { $('#modal').hidden = true; }
+function addAlert(text) { S.alerts.unshift({ t: Date.now(), text: text, read: false }); }
+
+/* ---------- layout pieces ---------- */
+function nav(tab) {
+  function a(href, k, icon, label, cls) { return '<a href="' + href + '" class="' + (cls || '') + (tab === k ? ' on' : '') + '"><span>' + ic(icon, cls === 'add' ? 22 : 20) + '</span>' + label + '</a>'; }
+  return '<nav class="bar" aria-label="Main">' + a('#/', 'fleet', 'plane', 'Fleet') + a('#/snags', 'snags', 'wrench', 'Snags') + a('#/add', 'add', 'plus', 'Add snag', 'add') + a('#/parts', 'parts', 'box', 'Parts') + a('#/due', 'due', 'cal', 'Due') + '</nav>';
+}
+function hdrPlain(title, sub) {
+  return '<div class="hd top"><div><div class="ttl">' + title + '</div><div class="sub">' + sub + '</div></div><button class="me" data-act="eng"><span class="av">' + esc(ini(S.me)) + '</span>' + esc(S.me) + '</button></div>';
+}
+function hdrBack(href, label, right) {
+  return '<div class="hd"><div class="back"><a class="iconbtn" href="' + href + '" aria-label="Back">' + ic('back', 20, '#fff') + '</a>' + (label || '') + (right || '') + '</div>';
+}
+
+/* ---------- views ---------- */
+function fleetCards() {
+  var q = (F.q || '').toLowerCase();
+  var h = S.ac.filter(function (a) { return (F.fleet === 'all' || a.st === F.fleet) && (!q || (a.reg + ' ' + a.type + ' ' + a.loc).toLowerCase().indexOf(q) > -1); }).map(function (a) {
+    var sn = openSnags(a.reg).length, pt = openParts(a.reg).length;
+    var col = a.st === 'AOG' ? '#B42318' : a.st === 'Limited' ? '#E08A00' : '#0C8A4B';
+    return '<a class="card ac" href="#/ac/' + a.reg + '"><i style="background:' + col + '"></i><div class="in"><div class="row sb"><div class="row g8 base"><b class="mono big">' + a.reg + '</b><span class="mut">' + esc(a.type) + '</span></div>' + stPill(a.st) + '</div><div class="row g16 meta"><span>' + ic('pin', 14) + esc(a.loc) + '</span><span>' + ic('wrench', 14) + '<b>' + sn + '</b> snag' + (sn === 1 ? '' : 's') + '</span><span>' + ic('box', 14) + '<b>' + pt + '</b> part' + (pt === 1 ? '' : 's') + '</span></div></div></a>';
+  }).join('');
+  return h || '<div class="empty">No aircraft match.</div>';
+}
+function vFleet() {
+  var unread = S.alerts.filter(function (a) { return !a.read; }).length;
+  var aog = S.ac.filter(function (a) { return a.st === 'AOG'; }).length;
+  var cnt = function (st) { return S.ac.filter(function (a) { return a.st === st; }).length; };
+  var h = '<div class="hd top"><div class="row g10"><div class="logo">' + ic('plane', 22, '#0B1F3A') + '</div><div><div class="ttl" style="font-size:16px">Solenta Aviation</div><div class="sub">Fleet status</div></div></div>' +
+    '<div class="row g8"><a class="rbtn" href="#/alerts" aria-label="Alerts, ' + unread + ' new">' + ic('bell', 20, '#fff') + (unread ? '<span class="badge">' + unread + '</span>' : '') + '</a>' +
+    '<button class="me" data-act="eng"><span class="av">' + esc(ini(S.me)) + '</span>' + esc(S.me) + '</button></div></div>';
+  h += '<div class="body"><div class="tiles"><div class="tile"><b>' + S.ac.length + '</b><span>Aircraft</span></div><div class="tile"><b>' + openSnags().length + '</b><span>Open snags</span></div><div class="tile"><b>' + openParts().length + '</b><span>Parts due</span></div><div class="tile red"><b>' + aog + '</b><span>AOG</span></div></div>';
+  h += '<div class="search">' + ic('search', 18) + '<input id="q" type="text" placeholder="Search registration or type" aria-label="Search aircraft" value="' + esc(F.q) + '"></div>';
+  h += chips([['all', 'All ' + S.ac.length], ['AOG', 'AOG ' + cnt('AOG')], ['Limited', 'Limited ' + cnt('Limited')], ['OK', 'OK ' + cnt('OK')]], F.fleet, 'fleet');
+  h += '<div id="list" style="display:flex;flex-direction:column;gap:8px">' + fleetCards() + '</div>';
+  h += '<div class="note">Test version. Sample data is saved on this phone only. <button class="link" data-act="reset">Reset sample data</button></div></div>';
+  return { html: h, tab: 'fleet' };
+}
+function snagRow(s, showAc) {
+  var ph = s.photos ? '<span aria-hidden="true">·</span><span style="display:inline-flex;align-items:center;gap:4px">' + ic('cam', 13) + s.photos + '</span>' : '';
+  return '<a class="card srow" href="#/snag/' + s.id + '"><div class="row sb"><div class="row g8"><b class="mono" style="font-size:14px">' + s.ac + '</b>' + priTag(s.pri) + '</div><span class="s" style="font-size:12px;color:#5B6778">' + age(s.ts) + '</span></div><div class="t">' + esc(s.title) + '</div><div class="m"><span>ATA ' + esc(s.ata.split(' ')[0]) + '</span><span aria-hidden="true">·</span><b>' + esc(s.st) + '</b>' + ph + '</div></a>';
+}
+function vAc(reg) {
+  var a = S.ac.filter(function (x) { return x.reg === reg; })[0];
+  if (!a) return vFleet();
+  var sn = openSnags(reg).sort(bySev), pt = openParts(reg), du = S.due.filter(function (x) { return x.ac === reg; }).sort(function (x, y) { return x.due - y.due; }).slice(0, 2);
+  var h = hdrBack('#/', '', stPill(a.st)) + '<div style="padding:0 4px"><div class="mono" style="font-size:28px;font-weight:600;line-height:1.1">' + a.reg + '</div><div class="sub" style="font-size:13px;margin-top:4px">' + esc(a.type) + ' · ' + esc(a.loc) + '</div></div></div>';
+  h += '<div class="body"><div class="stats"><div><small>Airframe hours</small><b class="mono">' + a.hrs + '</b></div><div><small>Cycles</small><b class="mono">' + a.cyc + '</b></div><div><small>Location</small><b>' + esc(a.loc) + '</b></div></div>';
+  h += '<div class="card sec"><div class="row sb"><h3>Open snags <small>' + sn.length + '</small></h3><button class="link" data-act="seeSnags" data-v="' + reg + '">See all</button></div>';
+  h += sn.slice(0, 3).map(function (s) { return '<a class="line" href="#/snag/' + s.id + '">' + priTag(s.pri) + '<div class="g"><div class="n">' + esc(s.title) + '</div><div class="s">ATA ' + esc(s.ata.split(' ')[0]) + ' · ' + age(s.ts) + ' · ' + esc(s.st) + '</div></div>' + ic('chev', 18, '#5B6778') + '</a>'; }).join('') || '<div class="line"><div class="s">No open snags.</div></div>';
+  h += '</div><div class="card sec"><div class="row sb"><h3>Parts waiting <small>' + pt.length + '</small></h3><a class="link" href="#/parts">Track</a></div>';
+  h += pt.map(function (p) { return '<div class="line"><div class="g"><div class="n">' + esc(p.desc) + '</div><div class="s mono">' + esc(p.pn) + ' · qty ' + p.qty + '</div></div><div style="text-align:right"><div style="font-size:12px;font-weight:700">' + STAGES[p.stage] + '</div><div class="s">' + (p.eta ? 'ETA ' + esc(p.eta) : 'No ETA') + '</div></div></div>'; }).join('') || '<div class="line"><div class="s">No parts waiting.</div></div>';
+  h += '</div><div class="card sec"><div class="row sb"><h3>Next due</h3><a class="link" href="#/due">All due</a></div>';
+  h += du.map(function (x) { var i = dueInfo(x.due); return '<div class="line"><div class="g"><div class="n">' + esc(x.t) + '</div></div><b style="font-size:13px;color:' + (i.days < 0 ? '#B42318' : '#0B1F3A') + '">' + i.label + (x.n ? ' · ' + x.n : '') + '</b></div>'; }).join('') || '<div class="line"><div class="s">Nothing due.</div></div>';
+  h += '</div></div><div class="bar"><a class="btn" href="#/add/' + reg + '">' + ic('plus', 18) + '&nbsp;Add snag</a></div>';
+  return { html: h, tab: 'x' };
+}
+function vSnags() {
+  var seg = F.seg;
+  var isOpen = function (s) { return s.st === 'Open' || s.st === 'Awaiting part'; };
+  var list = S.snags.filter(function (s) {
+    if (seg === 'open' && !isOpen(s)) return false;
+    if (seg === 'def' && s.st !== 'Deferred') return false;
+    if (seg === 'closed' && s.st !== 'Closed') return false;
+    if (F.sac && s.ac !== F.sac) return false;
+    if (F.sf === 'high' && !(s.pri === 'High' || s.pri === 'AOG')) return false;
+    if (F.sf === 'part' && s.st !== 'Awaiting part') return false;
+    if (F.sf === 'mine' && s.by !== S.me) return false;
+    return true;
+  }).sort(function (a, b) { return b.ts - a.ts; });
+  var c = function (fn) { return S.snags.filter(fn).length; };
+  var h = hdrPlain('Snags', F.sac ? esc(F.sac) + ' only' : 'All aircraft · newest first') + '<div class="body">';
+  h += '<div class="seg" role="group" aria-label="Status"><button type="button" class="' + (seg === 'open' ? 'on' : '') + '" data-act="f" data-k="seg" data-v="open">Open ' + c(isOpen) + '</button><button type="button" class="' + (seg === 'def' ? 'on' : '') + '" data-act="f" data-k="seg" data-v="def">Deferred ' + c(function (s) { return s.st === 'Deferred'; }) + '</button><button type="button" class="' + (seg === 'closed' ? 'on' : '') + '" data-act="f" data-k="seg" data-v="closed">Closed ' + c(function (s) { return s.st === 'Closed'; }) + '</button></div>';
+  h += chips([['all', 'All'], ['high', 'High'], ['part', 'Awaiting part'], ['mine', 'Mine']], F.sf, 'sf');
+  if (F.sac) h += '<div class="row sb"><span class="mut">Showing ' + esc(F.sac) + '</span><button class="link" data-act="clearAc">Show all aircraft</button></div>';
+  h += list.map(function (s) { return snagRow(s); }).join('') || '<div class="empty">No snags here.</div>';
+  h += '</div>';
+  return { html: h, tab: 'snags' };
+}
+function vSnag(id) {
+  var s = S.snags.filter(function (x) { return x.id === id; })[0];
+  if (!s) return vSnags();
+  var parts = S.parts.filter(function (p) { return p.snag === id; });
+  var th = (PH[id] || []);
+  var shown = th.length, miss = Math.max(0, s.photos - shown);
+  var h = hdrBack('#/snags', '<span class="mono" style="font-size:14px;color:#C3CEDD">Snag ' + s.id + '</span>', priTag(s.pri)) +
+    '<div style="padding:0 4px"><div style="font-size:20px;font-weight:700;line-height:1.25">' + esc(s.title) + '</div><div class="sub" style="font-size:13px;margin-top:6px"><a href="#/ac/' + s.ac + '" class="mono" style="color:#fff;font-weight:600;text-decoration:underline">' + s.ac + '</a> · reported ' + fdate(s.ts) + ', ' + ftime(s.ts) + '</div></div></div>';
+  h += '<div class="body"><div class="stats"><div><small>Status</small><b>' + esc(s.st) + '</b></div><div><small>ATA chapter</small><b>' + esc(s.ata) + '</b></div><div><small>Reported by</small><b>' + esc(s.by) + '</b></div></div>';
+  h += '<div class="card sec"><div style="font-size:12px;font-weight:700;color:#5B6778;margin-bottom:4px">Description</div><div style="font-size:14px;line-height:1.45">' + esc(s.desc || 'No description.') + '</div></div>';
+  h += '<div class="photos">' + th.map(function (u) { return '<div class="ph"><img alt="Snag photo" src="' + u + '"></div>'; }).join('') + Array(miss + 1).join('<div class="ph">' + ic('cam', 20) + 'Photo</div>') + '<label class="ph add" for="ph">' + ic('plus', 20) + 'Add photo</label></div>';
+  h += '<input type="file" id="ph" accept="image/*" multiple hidden>';
+  h += parts.map(function (p) { return '<a class="card sec row g10" href="#/parts"><div class="logo" style="width:40px;height:40px;background:#FCE9C2;flex:none">' + ic('box', 22) + '</div><div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:600">' + esc(p.desc) + ' · qty ' + p.qty + '</div><div class="mono s" style="font-size:12px;color:#5B6778">' + esc(p.pn) + '</div></div><div style="text-align:right"><div style="font-size:12px;font-weight:700">' + STAGES[p.stage] + '</div><div style="font-size:12px;color:#5B6778">' + (p.eta ? 'ETA ' + esc(p.eta) : '') + '</div></div></a>'; }).join('');
+  h += '<div class="card sec"><div style="font-size:14px;font-weight:700">Updates</div>' + s.log.slice().reverse().map(function (l) { return '<div class="log"><i></i><div><b>' + esc(l.text) + '</b><small>' + esc(l.who) + ' · ' + fdate(l.t) + ', ' + ftime(l.t) + '</small></div></div>'; }).join('') + '</div></div>';
+  h += '<div class="bar"><label class="btn o" for="ph" style="cursor:pointer">' + ic('cam', 18) + '&nbsp;Add photo</label><button class="btn" data-act="upd" data-id="' + s.id + '">Update snag</button></div>';
+  return { html: h, tab: 'x' };
+}
+function vAdd(reg) {
+  var h = hdrBack('#/', '<div style="font-size:18px;font-weight:700">Add snag</div>', '<div style="width:44px"></div>') + '</div><div class="body" style="gap:12px">';
+  h += '<div class="two"><div><label class="f" for="fAc">Aircraft</label><select id="fAc" class="in1 mono">' + S.ac.map(function (a) { return '<option' + (a.reg === reg ? ' selected' : '') + '>' + a.reg + '</option>'; }).join('') + '</select></div>';
+  h += '<div><label class="f" for="fAta">ATA chapter</label><select id="fAta" class="in1">' + ATA.map(function (x) { return '<option>' + x + '</option>'; }).join('') + '</select></div></div>';
+  h += '<div><label class="f" for="fTtl">Short title</label><input id="fTtl" class="in1" type="text" placeholder="e.g. Left tyre worn" maxlength="80"></div>';
+  h += '<div><label class="f" for="fDesc">What did you find?</label><textarea id="fDesc" class="in1" placeholder="Describe the defect"></textarea></div>';
+  h += '<div><div class="f" id="priL">Priority</div><div class="pri" id="priG" role="group" aria-labelledby="priL">' + ['Low', 'Med', 'High', 'AOG'].map(function (p) { return '<button type="button" data-act="pri" data-v="' + p + '" class="' + (p === addPri ? 'on ' : '') + (p === 'High' || p === 'AOG' ? 'hi' : '') + '">' + p + '</button>'; }).join('') + '</div></div>';
+  h += '<div class="photos"><label class="ph add" for="phAdd" style="width:100%;height:56px;flex-direction:row">' + ic('cam', 20) + 'Take or pick photo</label><div id="addTh" class="photos" style="width:100%"></div></div><input type="file" id="phAdd" accept="image/*" multiple hidden>';
+  h += '<div class="card sec" style="display:flex;flex-direction:column;gap:10px"><div class="row sb"><label for="needPart" style="font-size:14px;font-weight:700">Part needed for this snag</label><span class="sw"><input type="checkbox" id="needPart"><span></span></span></div><div id="partBox" hidden style="display:none;flex-direction:column;gap:10px"><div><label class="f" for="fPd">Part name</label><input id="fPd" class="in1" type="text" style="height:44px"></div><div class="two"><div><label class="f" for="fPn">Part number</label><input id="fPn" class="in1 mono" type="text" style="height:44px"></div><div style="flex:none;width:80px"><label class="f" for="fQty">Qty</label><input id="fQty" class="in1 mono" type="number" min="1" value="1" style="height:44px"></div></div></div></div>';
+  h += '<div class="mut" style="font-size:12px">Reported by <b style="color:#0B1F3A">' + esc(S.me) + '</b> · saved with today’s date and time</div></div>';
+  h += '<div class="bar"><button class="btn" data-act="saveAdd">Save snag</button></div>';
+  return { html: h, tab: 'x', after: function () { addPri = 'Med'; ADDPH = []; var b = $('#priG'); if (b) [].forEach.call(b.children, function (x) { x.className = (x.getAttribute('data-v') === 'Med' ? 'on ' : '') + (x.className.indexOf('hi') > -1 ? 'hi' : ''); }); } };
+}
+function vParts() {
+  var list = S.parts.filter(function (p) { return p.stage < 3 && (F.parts === 'all' || String(p.stage) === F.parts); }).sort(function (a, b) { return b.stage - a.stage; });
+  var c = function (n) { return S.parts.filter(function (p) { return p.stage === n; }).length; };
+  var h = hdrPlain('Parts', openParts().length + ' open · tap a part to move it on') + '<div class="body">';
+  h += chips([['all', 'All ' + openParts().length], ['0', 'Needed ' + c(0)], ['1', 'Ordered ' + c(1)], ['2', 'Shipped ' + c(2)]], F.parts, 'parts');
+  h += list.map(function (p) {
+    var i = S.parts.indexOf(p), need = p.stage === 0;
+    return '<button type="button" class="card dcard" data-act="adv" data-i="' + i + '" style="text-align:left;width:100%;' + (need ? 'background:#FFF8E8;border-color:#F0D79A' : '') + '"><div class="row sb"><b class="mono" style="font-size:13px">' + esc(p.pn) + '</b><span style="font-size:12px;font-weight:700">' + (need ? 'Needed · not ordered' : STAGES[p.stage] + (p.eta ? ' · ETA ' + esc(p.eta) : '')) + '</span></div><div style="font-size:14px;font-weight:600">' + esc(p.desc) + ' <span style="font-weight:400;color:#5B6778">· qty ' + p.qty + '</span></div><div class="pbar" role="img" aria-label="Stage ' + (p.stage + 1) + ' of 4, ' + STAGES[p.stage] + '">' + [0, 1, 2, 3].map(function (n) { return '<i class="' + (n <= p.stage ? 'f' : '') + '"></i>'; }).join('') + '</div><div style="font-size:12px;color:#4A5668"><b class="mono" style="color:#0B1F3A">' + p.ac + '</b> · snag ' + esc(p.snag || '-') + '</div></button>';
+  }).join('') || '<div class="empty">No parts in this stage.</div>';
+  h += '</div>';
+  return { html: h, tab: 'parts' };
+}
+function vDue() {
+  var t0 = today0(), items = S.due.slice().sort(function (a, b) { return a.due - b.due; });
+  var h = hdrPlain('Maintenance due', DAYN[new Date().getDay()] + ' ' + fdate(t0) + ' · ' + items.filter(function (x) { return dueInfo(x.due).days < 0; }).length + ' overdue') + '<div class="body">';
+  h += '<div class="week">' + [0, 1, 2, 3, 4, 5, 6].map(function (n) {
+    var dd = new Date(t0 + n * DAYMS), has = items.some(function (x) { var k = dueInfo(x.due).days; return k === n || (n === 0 && k < 0); });
+    return '<div class="' + (n === 0 ? 't' : '') + '">' + DAYN[dd.getDay()] + '<b>' + dd.getDate() + '</b>' + (has ? '<u></u>' : '<s></s>') + '</div>';
+  }).join('') + '</div>';
+  h += chips([['all', 'All'], ['7', 'Next 7 days'], ['30', 'Next 30 days']], F.due, 'due');
+  h += items.filter(function (x) { var k = dueInfo(x.due).days; return F.due === 'all' || k <= Number(F.due); }).map(function (x) {
+    var i = dueInfo(x.due), od = i.days < 0;
+    return '<div class="card dcard' + (od ? ' od' : '') + '"><div class="row sb"><b class="mono" style="font-size:14px">' + x.ac + '</b><span style="font-size:13px;font-weight:700;color:' + (od ? '#8F1B11' : '#0B1F3A') + '">' + (od ? ic('clock', 13) + ' ' : '') + fdate(x.due) + ' · ' + i.label + (x.n ? ' · ' + x.n : '') + '</span></div><div style="font-size:15px;font-weight:600">' + esc(x.t) + '</div><div class="dbar"><i style="width:' + x.pct + '%;background:' + (od ? '#B42318' : x.pct > 85 ? '#E08A00' : '#0C8A4B') + '"></i></div></div>';
+  }).join('');
+  h += '</div>';
+  return { html: h, tab: 'due' };
+}
+function vAlerts() {
+  var h = hdrBack('#/', '<div style="font-size:18px;font-weight:700">Alerts</div>', '<div style="width:44px"></div>') + '</div><div class="body">';
+  h += S.alerts.map(function (a) { return '<div class="card sec row g10" style="' + (a.read ? '' : 'border-left:6px solid #F5A524') + '"><div style="flex:1;font-size:14px;font-weight:' + (a.read ? '400' : '600') + '">' + esc(a.text) + '</div><span style="font-size:12px;color:#5B6778;flex:none">' + ago(a.t) + '</span></div>'; }).join('') || '<div class="empty">No alerts.</div>';
+  h += '</div>';
+  S.alerts.forEach(function (a) { a.read = true; }); save();
+  return { html: h, tab: 'x' };
+}
+
+/* ---------- router ---------- */
+function render() {
+  var p = location.hash.replace(/^#\/?/, '').split('/'), r = p[0] || 'fleet', out;
+  var key = location.hash;
+  if (r === 'ac') out = vAc(p[1]);
+  else if (r === 'snags') out = vSnags();
+  else if (r === 'snag') out = vSnag(p[1]);
+  else if (r === 'add') out = vAdd(p[1]);
+  else if (r === 'parts') out = vParts();
+  else if (r === 'due') out = vDue();
+  else if (r === 'alerts') out = vAlerts();
+  else out = vFleet();
+  $('#app').innerHTML = out.html + (out.tab === 'x' ? '' : nav(out.tab));
+  if (out.after) out.after();
+  if (key !== lastRoute) { window.scrollTo(0, 0); lastRoute = key; closeModal(); }
+}
+window.addEventListener('hashchange', render);
+
+/* ---------- actions ---------- */
+function engSheet() {
+  modal('<h2>Who is using the app?</h2>' + S.engs.map(function (n) { return '<button class="opt' + (n === S.me ? ' on' : '') + '" data-act="pick" data-v="' + esc(n) + '"><span class="av">' + esc(ini(n)) + '</span>' + esc(n) + '</button>'; }).join('') +
+    '<div class="two"><div><label class="f" for="newEng">Add a name</label><input id="newEng" class="in1" type="text" maxlength="30" placeholder="e.g. P. Mondlane"></div><div style="flex:none;align-self:flex-end"><button class="btn" data-act="addEng">Add</button></div></div><button class="btn o" data-act="close">Close</button>');
+}
+function updSheet(id) {
+  var s = S.snags.filter(function (x) { return x.id === id; })[0]; if (!s) return;
+  modal('<h2>Update ' + esc(s.id) + '</h2><div><label class="f" for="upNote">Note</label><textarea id="upNote" class="in1" placeholder="What was done or found?"></textarea></div><div><label class="f" for="upSt">Status</label><select id="upSt" class="in1">' + ['Open', 'Awaiting part', 'Deferred', 'Closed'].map(function (x) { return '<option' + (x === s.st ? ' selected' : '') + '>' + x + '</option>'; }).join('') + '</select></div><div class="mut" style="font-size:12px">Signed by <b style="color:#0B1F3A">' + esc(S.me) + '</b></div><button class="btn" data-act="saveUpd" data-id="' + esc(id) + '">Save update</button><button class="btn o" data-act="close">Cancel</button>');
+}
+function advSheet(i) {
+  var p = S.parts[i]; if (!p) return;
+  var nx = p.stage + 1; if (nx > 3) return;
+  modal('<h2>' + esc(p.desc) + '</h2><div class="mut">' + esc(p.pn) + ' · ' + p.ac + '</div><div style="font-size:15px">Move from <b>' + STAGES[p.stage] + '</b> to <b>' + STAGES[nx] + '</b>?</div>' + (nx < 3 ? '<div><label class="f" for="etaIn">ETA (optional)</label><input id="etaIn" class="in1" type="text" maxlength="20" placeholder="e.g. 12 Nov" value="' + esc(p.eta) + '"></div>' : '') + '<button class="btn" data-act="doAdv" data-i="' + i + '">Move to ' + STAGES[nx] + '</button><button class="btn o" data-act="close">Cancel</button>');
+}
+function val(id) { var e = $('#' + id); return e ? e.value.trim() : ''; }
+
+document.addEventListener('click', function (e) {
+  var m = $('#modal');
+  if (e.target === m) { closeModal(); return; }
+  var el = e.target.closest ? e.target.closest('[data-act]') : null;
+  if (!el) return;
+  var act = el.getAttribute('data-act'), v = el.getAttribute('data-v'), id = el.getAttribute('data-id');
+  if (act === 'f') { F[el.getAttribute('data-k')] = v; render(); }
+  else if (act === 'eng') engSheet();
+  else if (act === 'close') closeModal();
+  else if (act === 'pick') { S.me = v; save(); closeModal(); render(); toast('Signed in as ' + v); }
+  else if (act === 'addEng') { var n = val('newEng'); if (!n) return; if (S.engs.indexOf(n) < 0) S.engs.push(n); S.me = n; save(); closeModal(); render(); toast('Added ' + n); }
+  else if (act === 'seeSnags') { F.sac = v; F.seg = 'open'; F.sf = 'all'; location.hash = '#/snags'; }
+  else if (act === 'clearAc') { F.sac = ''; render(); }
+  else if (act === 'reset') { if (confirm('Reset all sample data on this phone?')) { S = seed(); save(); PH = {}; render(); toast('Sample data reset'); } }
+  else if (act === 'pri') { addPri = v; [].forEach.call($('#priG').children, function (b) { b.className = (b.getAttribute('data-v') === v ? 'on ' : '') + (b.getAttribute('data-v') === 'High' || b.getAttribute('data-v') === 'AOG' ? 'hi' : ''); }); }
+  else if (act === 'upd') updSheet(id);
+  else if (act === 'saveUpd') {
+    var s = S.snags.filter(function (x) { return x.id === id; })[0]; if (!s) return;
+    var note = val('upNote'), st = val('upSt'), txt = note || ('Status set to ' + st);
+    if (st !== s.st) { s.st = st; if (!note) txt = 'Status set to ' + st; else txt = note + ' (status: ' + st + ')'; }
+    if (st === 'Closed') txt += ' · closed by ' + S.me;
+    s.log.push({ t: Date.now(), who: S.me, text: txt });
+    if (st === 'Closed' && s.pri === 'AOG') { var other = S.snags.some(function (x) { return x.ac === s.ac && x.id !== s.id && x.pri === 'AOG' && x.st !== 'Closed'; }); var a = S.ac.filter(function (x) { return x.reg === s.ac; })[0]; if (a && !other && a.st === 'AOG') a.st = 'Limited'; }
+    save(); closeModal(); render(); toast('Snag updated');
+  }
+  else if (act === 'adv') advSheet(Number(el.getAttribute('data-i')));
+  else if (act === 'doAdv') {
+    var p = S.parts[Number(el.getAttribute('data-i'))]; if (!p) return;
+    p.stage += 1; var eta = $('#etaIn'); if (eta) p.eta = eta.value.trim();
+    addAlert('Part ' + STAGES[p.stage].toLowerCase() + ': ' + p.desc + (p.stage < 3 && p.eta ? ', ETA ' + p.eta : ''));
+    var sn = S.snags.filter(function (x) { return x.id === p.snag; })[0];
+    if (sn) { sn.log.push({ t: Date.now(), who: S.me, text: 'Part ' + STAGES[p.stage].toLowerCase() + ': ' + p.desc }); if (p.stage === 3 && sn.st === 'Awaiting part' && !S.parts.some(function (x) { return x.snag === sn.id && x.stage < 3; })) sn.st = 'Open'; }
+    save(); closeModal(); render(); toast('Part moved to ' + STAGES[p.stage]);
+  }
+  else if (act === 'saveAdd') {
+    var title = val('fTtl'); if (!title) { toast('Please enter a short title'); var t = $('#fTtl'); if (t) t.focus(); return; }
+    var reg = val('fAc'), sid = 'S-' + ('000' + S.seq++).slice(-4), need = $('#needPart') && $('#needPart').checked, pn = val('fPn'), pd = val('fPd');
+    var snag = { id: sid, ac: reg, ata: val('fAta'), title: title, pri: addPri, st: need ? 'Awaiting part' : 'Open', by: S.me, ts: Date.now(), desc: val('fDesc'), photos: ADDPH.length, log: [{ t: Date.now(), who: S.me, text: 'Snag reported' }] };
+    S.snags.unshift(snag); PH[sid] = ADDPH.slice();
+    if (need) S.parts.push({ pn: pn || 'TBC', desc: pd || title, qty: Math.max(1, Number(val('fQty')) || 1), ac: reg, snag: sid, stage: 0, eta: '' });
+    if (addPri === 'AOG') { var ac = S.ac.filter(function (x) { return x.reg === reg; })[0]; if (ac) ac.st = 'AOG'; }
+    addAlert('New snag ' + sid + ' on ' + reg + ': ' + title);
+    save(); location.hash = '#/snag/' + sid; toast('Snag saved');
+  }
+});
+document.addEventListener('input', function (e) {
+  if (e.target.id === 'q') { F.q = e.target.value; var l = $('#list'); if (l) l.innerHTML = fleetCards(); }
+});
+document.addEventListener('change', function (e) {
+  var t = e.target;
+  if (t.id === 'needPart') { var b = $('#partBox'); b.hidden = !t.checked; b.style.display = t.checked ? 'flex' : 'none'; }
+  else if (t.id === 'phAdd') {
+    [].forEach.call(t.files, function (f) { ADDPH.push(URL.createObjectURL(f)); });
+    $('#addTh').innerHTML = ADDPH.map(function (u) { return '<div class="ph"><img alt="Photo" src="' + u + '"></div>'; }).join(''); t.value = '';
+  }
+  else if (t.id === 'ph') {
+    var sid = location.hash.split('/')[2], s = S.snags.filter(function (x) { return x.id === sid; })[0]; if (!s) return;
+    PH[sid] = PH[sid] || [];
+    [].forEach.call(t.files, function (f) { PH[sid].push(URL.createObjectURL(f)); s.photos += 1; });
+    s.log.push({ t: Date.now(), who: S.me, text: 'Photo added' });
+    save(); render(); toast('Photo added');
+  }
+});
+render();
+})();
+</script>
+</body>
+</html>
