@@ -7,8 +7,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Solenta">
-<title>Solenta Aviation</title>
+<meta name="apple-mobile-web-app-title" content="Fleet Mozambique">
+<title>Fleet Maintenance Mozambique</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230B1F3A'/%3E%3Cpath d='M16 40l32-10-4-4-12 3-8-8h-4l5 10-6 3z' fill='%23F5A524'/%3E%3C/svg%3E">
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -62,7 +62,7 @@ button{cursor:pointer}
 .stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:#E3E8EE;border:1px solid #E3E8EE;border-radius:14px;overflow:hidden}
 .stats div{background:#fff;padding:10px 12px}.stats small{display:block;font-size:11px;color:#5B6778}.stats b{display:block;font-size:14px;margin-top:3px}
 .back{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-.pbar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}.pbar i{height:6px;border-radius:3px;background:#D5DCE5}.pbar i.f{background:#0B1F3A}
+.pbar{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}.pbar i{height:6px;border-radius:3px;background:#D5DCE5}.pbar i.f{background:#0B1F3A}
 .btn{height:50px;border-radius:14px;border:0;background:#F5A524;color:#0B1F3A;font-size:15px;font-weight:700;padding:0 18px}
 .btn.o{background:#fff;border:2px solid #0B1F3A}.btn.sm{height:40px;font-size:13px;border-radius:10px;padding:0 14px}
 .bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:#fff;border-top:1px solid #DDE3EA;display:flex;gap:10px;padding:10px 16px calc(12px + env(safe-area-inset-bottom))}
@@ -108,6 +108,10 @@ textarea.in1{height:88px;padding:10px 12px;line-height:1.4;resize:none}
 .opt.on{border-color:#0B1F3A;background:#FCE9C2;font-weight:700}
 #toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#0B1F3A;color:#fff;padding:12px 18px;border-radius:24px;font-size:14px;font-weight:600;z-index:60;box-shadow:0 4px 16px rgba(0,0,0,.25)}
 #toast[hidden]{display:none}
+.kv{display:grid;grid-template-columns:120px 1fr;gap:10px;font-size:14px;margin-top:6px}
+.kv .k{font-size:12px;font-weight:700;color:#5B6778;padding-top:2px}
+.kv .v{font-weight:500;word-break:break-word}
+@media (max-width:420px){.me.compact .nm{display:none}.me.compact{padding:0 6px}}
 </style>
 </head>
 <body>
@@ -117,11 +121,11 @@ textarea.in1{height:88px;padding:10px 12px;line-height:1.4;resize:none}
 <script>
 (function () {
 'use strict';
-var KEY = 'solenta_demo_v1', DAYMS = 86400000;
+var KEY = 'fmm_demo_v2', DAYMS = 86400000;
 var MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 var DAYN = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 var ATA = ['21 Air conditioning','23 Communications','24 Electrical','25 Cabin and equipment','26 Fire protection','27 Flight controls','28 Fuel','29 Hydraulics','32 Landing gear','33 Lights','34 Navigation','35 Oxygen','52 Doors','61 Propeller','63 Rotors','71 Engine','Other'];
-var STAGES = ['Needed','Ordered','Shipped','Arrived'];
+var STAGES = ['Needed','Requisitioned','Ordered','Shipped','Arrived'];
 var P = {
  plane:'M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z',
  bell:'M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.94 1.94 0 0 0 3.4 0',
@@ -149,55 +153,68 @@ function ago(ts) { var m = Math.round((Date.now() - ts) / 60000); if (m < 60) re
 function ini(n) { return String(n).split(/\s+/).map(function (w) { return w[0] || ''; }).join('').slice(0, 2).toUpperCase(); }
 
 /* ---------- sample data ---------- */
+var URGR = { AOG: 0, Urgent: 1, Routine: 2 };
+var REASONS = ['Defect', 'Scheduled maintenance', 'Stock low', 'AOG', 'Other'];
+var URGS = ['Routine', 'Urgent', 'AOG'];
+var CORES = ['N/A', 'Yes', 'No'];
 function seed() {
   var n = Date.now(), t0 = today0();
   function d(x) { return n - x * DAYMS; }
   function sn(id, ac, ata, title, pri, st, a, by, desc) { return { id: id, ac: ac, ata: ata, title: title, pri: pri, st: st, by: by, ts: d(a), desc: desc, photos: 0, log: [{ t: d(a), who: by, text: 'Snag reported' }] }; }
+  function pt(pn, desc, ser, core, qty, ac, snag, stage, eta, reason, urg, req, sup, who, a) {
+    var log = [{ t: d(a), who: who, text: 'Part order created' }];
+    if (req) log.push({ t: d(a - 0.2), who: who, text: 'Veryon requisition ' + req });
+    if (stage >= 2) log.push({ t: d(a - 0.6), who: who, text: 'Stage: ' + STAGES[2] + (eta ? ' · ETA: ' + eta : '') });
+    if (stage >= 3) log.push({ t: d(a - 1.2), who: who, text: 'Stage: ' + STAGES[3] });
+    return { pn: pn, desc: desc, sn: ser, core: core, qty: qty, ac: ac, snag: snag, stage: stage, eta: eta, reason: reason, urg: urg, req: req, sup: sup, log: log };
+  }
   return {
-    me: 'A. Silva', engs: ['A. Silva', 'J. Costa', 'M. Sitoe'], seq: 152,
+    me: 'John Smith', engs: ['John Smith', 'David Brown', 'Peter Jones'], seq: 152,
     ac: [
-      { reg: 'C9-AEF', type: 'King Air 350', loc: 'Maputo', st: 'AOG', hrs: '6,402.1', cyc: '7,115' },
-      { reg: 'C9-ABD', type: 'Caravan 208B', loc: 'Afungi', st: 'Limited', hrs: '4,218.6', cyc: '5,902' },
-      { reg: 'C9-ABC', type: 'Caravan 208B', loc: 'Pemba', st: 'OK', hrs: '3,877.3', cyc: '5,240' },
-      { reg: 'C9-HAB', type: 'AS350 B3', loc: 'Pemba', st: 'OK', hrs: '2,950.0', cyc: '4,011' },
-      { reg: 'C9-HAA', type: 'AS350 B3', loc: 'Afungi', st: 'OK', hrs: '3,104.8', cyc: '4,376' }
+      { reg: 'C9-BBM', type: 'ERJ-145', loc: 'Maputo', st: 'OK', hrs: '-', cyc: '-' },
+      { reg: 'C9-SPM', type: 'ERJ-145', loc: 'Pemba', st: 'Limited', hrs: '-', cyc: '-' },
+      { reg: 'C9-BBJ', type: 'ERJ-145', loc: 'Maputo', st: 'AOG', hrs: '-', cyc: '-' },
+      { reg: 'ZS-CCS', type: 'ATR 72-600', loc: 'Pemba', st: 'OK', hrs: '-', cyc: '-' },
+      { reg: 'ZS-ECO', type: 'ATR 72-600', loc: 'Pemba', st: 'OK', hrs: '-', cyc: '-' },
+      { reg: 'ZS-BBK', type: 'Type to be set', loc: 'To be set', st: 'OK', hrs: '-', cyc: '-' }
     ],
     snags: [
-      sn('S-0151', 'C9-HAA', '33 Lights', 'Landing light inoperative', 'Low', 'Open', 1, 'A. Silva', 'Landing light does not come on. Bulb and fuse to be checked.'),
-      sn('S-0150', 'C9-HAB', '21 Air conditioning', 'Cabin heater fan noisy', 'Low', 'Open', 3, 'M. Sitoe', 'Fan whine when heater is on high.'),
-      sn('S-0149', 'C9-HAB', '63 Rotors', 'Rotor brake lever stiff', 'Low', 'Open', 5, 'J. Costa', 'Lever needs extra force to release.'),
-      sn('S-0148', 'C9-ABC', '32 Landing gear', 'LH main tyre worn near limit', 'Med', 'Open', 2, 'A. Silva', 'Tread close to wear limit on LH main tyre.'),
-      sn('S-0147', 'C9-ABC', '21 Air conditioning', 'Cabin air vent loose', 'Low', 'Open', 7, 'M. Sitoe', 'Vent at row 3 is loose in its housing.'),
-      sn('S-0146', 'C9-ABD', '33 Lights', 'Left nav light lens cracked', 'Low', 'Open', 1, 'A. Silva', 'Small crack in lens, light still works.'),
-      sn('S-0145', 'C9-ABD', '25 Cabin and equipment', 'Pax seat 3 recline stiff', 'Low', 'Open', 8, 'J. Costa', 'Recline lever stiff, needs lubrication.'),
-      sn('S-0144', 'C9-AEF', '35 Oxygen', 'Oxygen mask stowage latch stiff', 'Low', 'Open', 3, 'M. Sitoe', 'Latch needs force to open.'),
-      sn('S-0143', 'C9-AEF', '33 Lights', 'Cabin reading light flickers', 'Low', 'Open', 4, 'M. Sitoe', 'Row 2 reading light flickers when touched.'),
-      sn('S-0142', 'C9-ABD', '32 Landing gear', 'LH main gear door actuator leaking', 'High', 'Awaiting part', 3, 'A. Silva', 'Hydraulic fluid seen on the actuator rod after the last flight. Slow weep, about 1 cm wet area.'),
-      sn('S-0141', 'C9-AEF', '24 Electrical', 'Generator 2 output low in flight', 'High', 'Awaiting part', 2, 'A. Silva', 'Gen 2 load drops after 20 minutes in cruise. Control unit suspected.'),
-      sn('S-0140', 'C9-ABD', '52 Doors', 'Cabin door seal worn', 'Med', 'Awaiting part', 5, 'J. Costa', 'Seal is flattened and torn near the lower corner.'),
-      sn('S-0139', 'C9-AEF', '32 Landing gear', 'Nose gear steering shimmy on taxi', 'AOG', 'Awaiting part', 6, 'A. Silva', 'Shimmy felt above 20 kt on taxi. Play found in the damper.'),
-      sn('S-0137', 'C9-AEF', '25 Cabin and equipment', 'ELT battery due, low voltage', 'Med', 'Awaiting part', 9, 'J. Costa', 'ELT battery reached its limit. Replacement requested.'),
-      sn('S-0135', 'C9-ABC', '25 Cabin and equipment', 'Cabin carpet edge lifting', 'Low', 'Deferred', 12, 'J. Costa', 'Carpet edge lifting at the door. Deferred to next check.'),
-      sn('S-0130', 'C9-HAA', '23 Communications', 'Static wick missing', 'Low', 'Closed', 20, 'M. Sitoe', 'One static wick missing from the tail.')
+      sn('S-0151', 'ZS-ECO', '33 Lights', 'Landing light inoperative', 'Low', 'Open', 1, 'John Smith', 'Landing light does not come on. Lamp and fuse to be checked.'),
+      sn('S-0150', 'ZS-CCS', '21 Air conditioning', 'Cabin air vent loose', 'Low', 'Open', 3, 'Peter Jones', 'Vent at row 3 is loose in its housing.'),
+      sn('S-0149', 'ZS-CCS', '61 Propeller', 'Propeller spinner screw missing', 'Low', 'Open', 5, 'David Brown', 'One spinner screw missing on the right propeller.'),
+      sn('S-0148', 'C9-SPM', '32 Landing gear', 'LH main tyre worn near limit', 'Med', 'Open', 2, 'John Smith', 'Tread close to wear limit on LH main tyre.'),
+      sn('S-0147', 'C9-BBM', '25 Cabin and equipment', 'Seat 4C recline stiff', 'Low', 'Open', 7, 'Peter Jones', 'Recline lever is stiff, needs lubrication.'),
+      sn('S-0146', 'C9-BBM', '33 Lights', 'Left nav light lens cracked', 'Low', 'Open', 1, 'John Smith', 'Small crack in lens, light still works.'),
+      sn('S-0145', 'C9-SPM', '25 Cabin and equipment', 'Galley latch stiff', 'Low', 'Open', 8, 'David Brown', 'Latch needs extra force to open.'),
+      sn('S-0144', 'C9-BBJ', '35 Oxygen', 'Oxygen mask stowage latch stiff', 'Low', 'Open', 3, 'Peter Jones', 'Latch needs force to open.'),
+      sn('S-0143', 'C9-BBJ', '33 Lights', 'Cabin reading light flickers', 'Low', 'Open', 4, 'Peter Jones', 'Row 2 reading light flickers when touched.'),
+      sn('S-0142', 'C9-SPM', '32 Landing gear', 'LH main gear door actuator leaking', 'High', 'Awaiting part', 3, 'John Smith', 'Hydraulic fluid seen on the actuator rod after the last flight. Slow weep, about 1 cm wet area.'),
+      sn('S-0141', 'C9-BBJ', '24 Electrical', 'Generator 2 output low in flight', 'High', 'Awaiting part', 2, 'John Smith', 'Gen 2 load drops after 20 minutes in cruise. Control unit suspected.'),
+      sn('S-0140', 'C9-SPM', '52 Doors', 'Cabin door seal worn', 'Med', 'Awaiting part', 5, 'David Brown', 'Seal is flattened and torn near the lower corner.'),
+      sn('S-0139', 'C9-BBJ', '32 Landing gear', 'Nose gear steering shimmy on taxi', 'AOG', 'Awaiting part', 6, 'John Smith', 'Shimmy felt above 20 kt on taxi. Play found in the damper.'),
+      sn('S-0137', 'ZS-ECO', '25 Cabin and equipment', 'ELT battery due, low voltage', 'Med', 'Awaiting part', 9, 'David Brown', 'ELT battery reached its limit. Replacement requested.'),
+      sn('S-0135', 'ZS-CCS', '25 Cabin and equipment', 'Cabin carpet edge lifting', 'Low', 'Deferred', 12, 'David Brown', 'Carpet edge lifting at the door. Deferred to next check.'),
+      sn('S-0130', 'ZS-ECO', '23 Communications', 'Static wick missing', 'Low', 'Closed', 20, 'Peter Jones', 'One static wick missing from the tail.')
     ],
     parts: [
-      { pn: '9901-302', desc: 'ELT battery', qty: 1, ac: 'C9-AEF', snag: 'S-0137', stage: 2, eta: '4 Nov' },
-      { pn: '2210-118-C', desc: 'Nose steering damper', qty: 1, ac: 'C9-AEF', snag: 'S-0139', stage: 2, eta: '5 Nov' },
-      { pn: '4410-221-A', desc: 'Gear door actuator', qty: 1, ac: 'C9-ABD', snag: 'S-0142', stage: 1, eta: '8 Nov' },
-      { pn: '3305-090', desc: 'Cabin door seal, 3 m', qty: 1, ac: 'C9-ABD', snag: 'S-0140', stage: 1, eta: '11 Nov' },
-      { pn: '7712-004', desc: 'Generator 2 control unit', qty: 1, ac: 'C9-AEF', snag: 'S-0141', stage: 0, eta: '' }
+      pt('9901-302', 'ELT battery', '', 'N/A', 1, 'ZS-ECO', 'S-0137', 3, '4 Nov', 'Scheduled maintenance', 'Routine', 'VR-10231', 'Supplier 1', 'David Brown', 9),
+      pt('2210-118-C', 'Nose steering damper', 'SN-44821', 'Yes', 1, 'C9-BBJ', 'S-0139', 3, '5 Nov', 'AOG', 'AOG', 'VR-10229', 'Supplier 2', 'John Smith', 6),
+      pt('4410-221-A', 'Gear door actuator', 'SN-90417', 'Yes', 1, 'C9-SPM', 'S-0142', 2, '8 Nov', 'Defect', 'Urgent', 'VR-10236', 'Supplier 2', 'John Smith', 3),
+      pt('3305-090', 'Cabin door seal, 3 m', '', 'N/A', 1, 'C9-SPM', 'S-0140', 2, '11 Nov', 'Defect', 'Routine', 'VR-10240', 'Supplier 1', 'David Brown', 5),
+      pt('7712-004', 'Generator 2 control unit', 'SN-30518', 'Yes', 1, 'C9-BBJ', 'S-0141', 1, '', 'Defect', 'Urgent', 'VR-10243', '', 'John Smith', 2),
+      pt('5510-12', 'Landing light lamp', '', 'N/A', 2, 'ZS-ECO', 'S-0151', 0, '', 'Defect', 'Routine', '', '', 'John Smith', 1)
     ],
     due: [
-      { ac: 'C9-AEF', t: 'ELT battery change', due: t0 - 2 * DAYMS, pct: 100, n: '' },
-      { ac: 'C9-HAA', t: 'Compass swing', due: t0 + 3 * DAYMS, pct: 92, n: '' },
-      { ac: 'C9-ABD', t: '50 h inspection', due: t0 + 6 * DAYMS, pct: 76, n: '12 FH' },
-      { ac: 'C9-HAB', t: '100 h inspection', due: t0 + 14 * DAYMS, pct: 62, n: '38 FH' },
-      { ac: 'C9-ABC', t: 'Annual inspection', due: t0 + 21 * DAYMS, pct: 94, n: '' }
+      { ac: 'ZS-ECO', t: 'ELT battery change', due: t0 - 2 * DAYMS, pct: 100, n: '' },
+      { ac: 'ZS-CCS', t: 'Compass swing', due: t0 + 3 * DAYMS, pct: 92, n: '' },
+      { ac: 'C9-SPM', t: 'A-check', due: t0 + 6 * DAYMS, pct: 76, n: '12 FH' },
+      { ac: 'C9-BBM', t: 'Borescope inspection', due: t0 + 14 * DAYMS, pct: 62, n: '38 FH' },
+      { ac: 'C9-BBJ', t: 'Calendar inspection', due: t0 + 21 * DAYMS, pct: 94, n: '' }
     ],
     alerts: [
       { t: d(0.1), text: 'Part shipped: ELT battery, ETA 4 Nov', read: false },
-      { t: d(0.3), text: 'New snag S-0141 on C9-AEF: Generator 2 output low', read: false },
-      { t: d(1), text: 'ELT battery change is overdue on C9-AEF', read: false },
+      { t: d(0.3), text: 'New snag S-0141 on C9-BBJ: Generator 2 output low', read: false },
+      { t: d(1), text: 'ELT battery change is overdue on ZS-ECO', read: false },
       { t: d(2), text: 'Part ordered: Gear door actuator', read: true }
     ]
   };
@@ -215,7 +232,7 @@ var lastRoute = '';
 
 /* ---------- helpers ---------- */
 function openSnags(reg) { return S.snags.filter(function (s) { return s.st !== 'Closed' && s.st !== 'Deferred' && (!reg || s.ac === reg); }); }
-function openParts(reg) { return S.parts.filter(function (p) { return p.stage < 3 && (!reg || p.ac === reg); }); }
+function openParts(reg) { return S.parts.filter(function (p) { return p.stage < 4 && (!reg || p.ac === reg); }); }
 var RANK = { AOG: 0, High: 1, Med: 2, Low: 3 };
 function bySev(a, b) { return (RANK[a.pri] - RANK[b.pri]) || (b.ts - a.ts); }
 function stPill(st) {
@@ -262,9 +279,9 @@ function vFleet() {
   var unread = S.alerts.filter(function (a) { return !a.read; }).length;
   var aog = S.ac.filter(function (a) { return a.st === 'AOG'; }).length;
   var cnt = function (st) { return S.ac.filter(function (a) { return a.st === st; }).length; };
-  var h = '<div class="hd top"><div class="row g10"><div class="logo">' + ic('plane', 22, '#0B1F3A') + '</div><div><div class="ttl" style="font-size:16px">Solenta Aviation</div><div class="sub">Fleet status</div></div></div>' +
+  var h = '<div class="hd top"><div class="row g10"><div class="logo">' + ic('plane', 22, '#0B1F3A') + '</div><div><div class="ttl" style="font-size:15px;line-height:1.2">Fleet Maintenance<br>Mozambique</div></div></div>' +
     '<div class="row g8"><a class="rbtn" href="#/alerts" aria-label="Alerts, ' + unread + ' new">' + ic('bell', 20, '#fff') + (unread ? '<span class="badge">' + unread + '</span>' : '') + '</a>' +
-    '<button class="me" data-act="eng"><span class="av">' + esc(ini(S.me)) + '</span>' + esc(S.me) + '</button></div></div>';
+    '<button class="me compact" data-act="eng"><span class="av">' + esc(ini(S.me)) + '</span><span class="nm">' + esc(S.me) + '</span></button></div></div>';
   h += '<div class="body"><div class="tiles"><div class="tile"><b>' + S.ac.length + '</b><span>Aircraft</span></div><div class="tile"><b>' + openSnags().length + '</b><span>Open snags</span></div><div class="tile"><b>' + openParts().length + '</b><span>Parts due</span></div><div class="tile red"><b>' + aog + '</b><span>AOG</span></div></div>';
   h += '<div class="search">' + ic('search', 18) + '<input id="q" type="text" placeholder="Search registration or type" aria-label="Search aircraft" value="' + esc(F.q) + '"></div>';
   h += chips([['all', 'All ' + S.ac.length], ['AOG', 'AOG ' + cnt('AOG')], ['Limited', 'Limited ' + cnt('Limited')], ['OK', 'OK ' + cnt('OK')]], F.fleet, 'fleet');
@@ -325,7 +342,7 @@ function vSnag(id) {
   h += '<div class="card sec"><div style="font-size:12px;font-weight:700;color:#5B6778;margin-bottom:4px">Description</div><div style="font-size:14px;line-height:1.45">' + esc(s.desc || 'No description.') + '</div></div>';
   h += '<div class="photos">' + th.map(function (u) { return '<div class="ph"><img alt="Snag photo" src="' + u + '"></div>'; }).join('') + Array(miss + 1).join('<div class="ph">' + ic('cam', 20) + 'Photo</div>') + '<label class="ph add" for="ph">' + ic('plus', 20) + 'Add photo</label></div>';
   h += '<input type="file" id="ph" accept="image/*" multiple hidden>';
-  h += parts.map(function (p) { return '<a class="card sec row g10" href="#/parts"><div class="logo" style="width:40px;height:40px;background:#FCE9C2;flex:none">' + ic('box', 22) + '</div><div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:600">' + esc(p.desc) + ' · qty ' + p.qty + '</div><div class="mono s" style="font-size:12px;color:#5B6778">' + esc(p.pn) + '</div></div><div style="text-align:right"><div style="font-size:12px;font-weight:700">' + STAGES[p.stage] + '</div><div style="font-size:12px;color:#5B6778">' + (p.eta ? 'ETA ' + esc(p.eta) : '') + '</div></div></a>'; }).join('');
+  h += parts.map(function (p) { return '<a class="card sec row g10" href="#/part/' + S.parts.indexOf(p) + '"><div class="logo" style="width:40px;height:40px;background:#FCE9C2;flex:none">' + ic('box', 22) + '</div><div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:600">' + esc(p.desc) + ' · qty ' + p.qty + '</div><div class="mono s" style="font-size:12px;color:#5B6778">' + esc(p.pn) + '</div></div><div style="text-align:right"><div style="font-size:12px;font-weight:700">' + STAGES[p.stage] + '</div><div style="font-size:12px;color:#5B6778">' + (p.eta ? 'ETA ' + esc(p.eta) : '') + '</div></div></a>'; }).join('');
   h += '<div class="card sec"><div style="font-size:14px;font-weight:700">Updates</div>' + s.log.slice().reverse().map(function (l) { return '<div class="log"><i></i><div><b>' + esc(l.text) + '</b><small>' + esc(l.who) + ' · ' + fdate(l.t) + ', ' + ftime(l.t) + '</small></div></div>'; }).join('') + '</div></div>';
   h += '<div class="bar"><label class="btn o" for="ph" style="cursor:pointer">' + ic('cam', 18) + '&nbsp;Add photo</label><button class="btn" data-act="upd" data-id="' + s.id + '">Update snag</button></div>';
   return { html: h, tab: 'x' };
@@ -338,22 +355,55 @@ function vAdd(reg) {
   h += '<div><label class="f" for="fDesc">What did you find?</label><textarea id="fDesc" class="in1" placeholder="Describe the defect"></textarea></div>';
   h += '<div><div class="f" id="priL">Priority</div><div class="pri" id="priG" role="group" aria-labelledby="priL">' + ['Low', 'Med', 'High', 'AOG'].map(function (p) { return '<button type="button" data-act="pri" data-v="' + p + '" class="' + (p === addPri ? 'on ' : '') + (p === 'High' || p === 'AOG' ? 'hi' : '') + '">' + p + '</button>'; }).join('') + '</div></div>';
   h += '<div class="photos"><label class="ph add" for="phAdd" style="width:100%;height:56px;flex-direction:row">' + ic('cam', 20) + 'Take or pick photo</label><div id="addTh" class="photos" style="width:100%"></div></div><input type="file" id="phAdd" accept="image/*" multiple hidden>';
-  h += '<div class="card sec" style="display:flex;flex-direction:column;gap:10px"><div class="row sb"><label for="needPart" style="font-size:14px;font-weight:700">Part needed for this snag</label><span class="sw"><input type="checkbox" id="needPart"><span></span></span></div><div id="partBox" hidden style="display:none;flex-direction:column;gap:10px"><div><label class="f" for="fPd">Part name</label><input id="fPd" class="in1" type="text" style="height:44px"></div><div class="two"><div><label class="f" for="fPn">Part number</label><input id="fPn" class="in1 mono" type="text" style="height:44px"></div><div style="flex:none;width:80px"><label class="f" for="fQty">Qty</label><input id="fQty" class="in1 mono" type="number" min="1" value="1" style="height:44px"></div></div></div></div>';
+  h += '<div class="card sec" style="display:flex;flex-direction:column;gap:10px"><div class="row sb"><label for="needPart" style="font-size:14px;font-weight:700">Part needed for this snag</label><span class="sw"><input type="checkbox" id="needPart"><span></span></span></div><div id="partBox" hidden style="display:none;flex-direction:column;gap:10px"><div><label class="f" for="fPd">Part name</label><input id="fPd" class="in1" type="text" style="height:44px"></div><div class="two"><div><label class="f" for="fPn">Part number (P/N)</label><input id="fPn" class="in1 mono" type="text" style="height:44px"></div><div style="flex:none;width:80px"><label class="f" for="fQty">Qty</label><input id="fQty" class="in1 mono" type="number" min="1" value="1" style="height:44px"></div></div><div class="two"><div><label class="f" for="fSer">Serial number (S/N)</label><input id="fSer" class="in1 mono" type="text" style="height:44px"></div><div><label class="f" for="fCore">Core available</label><select id="fCore" class="in1" style="height:44px"><option>N/A</option><option>Yes</option><option>No</option></select></div></div></div></div>';
   h += '<div class="mut" style="font-size:12px">Reported by <b style="color:#0B1F3A">' + esc(S.me) + '</b> · saved with today’s date and time</div></div>';
   h += '<div class="bar"><button class="btn" data-act="saveAdd">Save snag</button></div>';
   return { html: h, tab: 'x', after: function () { addPri = 'Med'; ADDPH = []; var b = $('#priG'); if (b) [].forEach.call(b.children, function (x) { x.className = (x.getAttribute('data-v') === 'Med' ? 'on ' : '') + (x.className.indexOf('hi') > -1 ? 'hi' : ''); }); } };
 }
+function urgTag(u) { return '<span class="tag ' + (u === 'AOG' ? 'hi' : u === 'Urgent' ? 'md' : 'lo') + '">' + esc(u || 'Routine') + '</span>'; }
+function stageBar(stage) {
+  return '<div class="pbar" role="img" aria-label="Stage ' + (stage + 1) + ' of 5, ' + STAGES[stage] + '">' + [0, 1, 2, 3, 4].map(function (n) { return '<i class="' + (n <= stage ? 'f' : '') + '"></i>'; }).join('') + '</div>';
+}
+function optList(arr, cur) { return arr.map(function (x) { return '<option' + (x === cur ? ' selected' : '') + '>' + esc(x) + '</option>'; }).join(''); }
+function kv(rows) {
+  return '<div class="kv">' + rows.map(function (r) { return '<span class="k">' + r[0] + '</span><span class="v">' + (r[1] === '' || r[1] == null ? '<span style="color:#8A94A3">Not set</span>' : esc(r[1])) + '</span>'; }).join('') + '</div>';
+}
 function vParts() {
-  var list = S.parts.filter(function (p) { return p.stage < 3 && (F.parts === 'all' || String(p.stage) === F.parts); }).sort(function (a, b) { return b.stage - a.stage; });
+  var list = S.parts.filter(function (p) { return p.stage < 4 && (F.parts === 'all' || String(p.stage) === F.parts); }).sort(function (a, b) { return (URGR[a.urg] - URGR[b.urg]) || (a.stage - b.stage); });
   var c = function (n) { return S.parts.filter(function (p) { return p.stage === n; }).length; };
-  var h = hdrPlain('Parts', openParts().length + ' open · tap a part to move it on') + '<div class="body">';
-  h += chips([['all', 'All ' + openParts().length], ['0', 'Needed ' + c(0)], ['1', 'Ordered ' + c(1)], ['2', 'Shipped ' + c(2)]], F.parts, 'parts');
+  var h = hdrPlain('Parts', openParts().length + ' open · tap a part for details') + '<div class="body">';
+  h += '<a class="btn" href="#/order" style="display:flex;align-items:center;justify-content:center;gap:6px">' + ic('plus', 18) + 'New part order</a>';
+  h += chips([['all', 'All ' + openParts().length], ['0', 'Needed ' + c(0)], ['1', 'Requisitioned ' + c(1)], ['2', 'Ordered ' + c(2)], ['3', 'Shipped ' + c(3)]], F.parts, 'parts');
   h += list.map(function (p) {
     var i = S.parts.indexOf(p), need = p.stage === 0;
-    return '<button type="button" class="card dcard" data-act="adv" data-i="' + i + '" style="text-align:left;width:100%;' + (need ? 'background:#FFF8E8;border-color:#F0D79A' : '') + '"><div class="row sb"><b class="mono" style="font-size:13px">' + esc(p.pn) + '</b><span style="font-size:12px;font-weight:700">' + (need ? 'Needed · not ordered' : STAGES[p.stage] + (p.eta ? ' · ETA ' + esc(p.eta) : '')) + '</span></div><div style="font-size:14px;font-weight:600">' + esc(p.desc) + ' <span style="font-weight:400;color:#5B6778">· qty ' + p.qty + '</span></div><div class="pbar" role="img" aria-label="Stage ' + (p.stage + 1) + ' of 4, ' + STAGES[p.stage] + '">' + [0, 1, 2, 3].map(function (n) { return '<i class="' + (n <= p.stage ? 'f' : '') + '"></i>'; }).join('') + '</div><div style="font-size:12px;color:#4A5668"><b class="mono" style="color:#0B1F3A">' + p.ac + '</b> · snag ' + esc(p.snag || '-') + '</div></button>';
+    return '<a class="card dcard" href="#/part/' + i + '" style="' + (need ? 'background:#FFF8E8;border-color:#F0D79A' : '') + '"><div class="row sb"><div class="row g8"><b class="mono" style="font-size:13px">' + esc(p.pn) + '</b>' + urgTag(p.urg) + '</div><span style="font-size:12px;font-weight:700">' + (need ? 'Needed · no requisition' : STAGES[p.stage] + (p.eta && p.stage >= 2 ? ' · ETA ' + esc(p.eta) : '')) + '</span></div><div style="font-size:14px;font-weight:600">' + esc(p.desc) + ' <span style="font-weight:400;color:#5B6778">· qty ' + p.qty + '</span></div>' + stageBar(p.stage) + '<div style="font-size:12px;color:#4A5668"><b class="mono" style="color:#0B1F3A">' + p.ac + '</b> · snag ' + esc(p.snag || '-') + (p.req ? ' · Veryon ' + esc(p.req) : '') + '</div></a>';
   }).join('') || '<div class="empty">No parts in this stage.</div>';
   h += '</div>';
   return { html: h, tab: 'parts' };
+}
+function vPart(i) {
+  var p = S.parts[i]; if (!p) return vParts();
+  var h = hdrBack('#/parts', '<span class="mono" style="font-size:14px;color:#C3CEDD">' + esc(p.pn) + '</span>', urgTag(p.urg)) +
+    '<div style="padding:0 4px"><div style="font-size:20px;font-weight:700;line-height:1.25">' + esc(p.desc) + '</div><div class="sub" style="font-size:13px;margin-top:6px"><a href="#/ac/' + p.ac + '" class="mono" style="color:#fff;font-weight:600;text-decoration:underline">' + p.ac + '</a>' + (p.snag ? ' · snag ' + esc(p.snag) : '') + '</div></div></div>';
+  h += '<div class="body"><div class="card sec">' + stageBar(p.stage) + '<div style="font-size:14px;font-weight:700;margin-top:8px">' + STAGES[p.stage] + '</div></div>';
+  h += '<div class="card sec"><h3>Part details</h3>' + kv([['Part number', p.pn], ['Serial number', p.sn], ['Core available', p.core], ['Quantity', p.qty], ['Reason for spare', p.reason], ['Urgency', p.urg]]) + '</div>';
+  h += '<div class="card sec"><h3>Veryon requisition</h3>' + kv([['Requisition no.', p.req], ['Supplier', p.sup], ['ETA', p.eta], ['Stage', STAGES[p.stage]]]) + '</div>';
+  h += '<div class="card sec"><div style="font-size:14px;font-weight:700">Procurement updates</div>' + p.log.slice().reverse().map(function (l) { return '<div class="log"><i></i><div><b>' + esc(l.text) + '</b><small>' + esc(l.who) + ' · ' + fdate(l.t) + ', ' + ftime(l.t) + '</small></div></div>'; }).join('') + '</div></div>';
+  h += '<div class="bar"><button class="btn o" data-act="editp" data-i="' + i + '">Edit details</button><button class="btn" data-act="proc" data-i="' + i + '">Add update</button></div>';
+  return { html: h, tab: 'x' };
+}
+function vOrder(reg) {
+  var h = hdrBack('#/parts', '<div style="font-size:18px;font-weight:700">New part order</div>', '<div style="width:44px"></div>') + '</div><div class="body" style="gap:12px">';
+  h += '<div class="two"><div><label class="f" for="oAc">Aircraft</label><select id="oAc" class="in1 mono">' + S.ac.map(function (a) { return '<option' + (a.reg === reg ? ' selected' : '') + '>' + a.reg + '</option>'; }).join('') + '</select></div>';
+  h += '<div><label class="f" for="oSn">Linked snag</label><select id="oSn" class="in1"><option value="">None</option>' + openSnags().sort(bySev).map(function (s) { return '<option value="' + s.id + '">' + s.id + ' · ' + esc(s.ac) + ' · ' + esc(s.title) + '</option>'; }).join('') + '</select></div></div>';
+  h += '<div><label class="f" for="oDesc">Part name</label><input id="oDesc" class="in1" type="text" maxlength="80" placeholder="e.g. Brake assembly"></div>';
+  h += '<div class="two"><div><label class="f" for="oPn">Part number (P/N)</label><input id="oPn" class="in1 mono" type="text" maxlength="40"></div><div><label class="f" for="oSer">Serial number (S/N)</label><input id="oSer" class="in1 mono" type="text" maxlength="40"></div></div>';
+  h += '<div class="two"><div><label class="f" for="oCore">Core available</label><select id="oCore" class="in1">' + optList(CORES, 'N/A') + '</select></div><div><label class="f" for="oQty">Quantity</label><input id="oQty" class="in1 mono" type="number" min="1" value="1"></div></div>';
+  h += '<div class="two"><div><label class="f" for="oRea">Reason for spare</label><select id="oRea" class="in1">' + optList(REASONS, 'Defect') + '</select></div><div><label class="f" for="oUrg">Urgency</label><select id="oUrg" class="in1">' + optList(URGS, 'Routine') + '</select></div></div>';
+  h += '<div class="card sec" style="display:flex;flex-direction:column;gap:10px"><div style="font-size:14px;font-weight:700">Veryon requisition (procurement)</div><div><label class="f" for="oReq">Veryon requisition number</label><input id="oReq" class="in1 mono" type="text" maxlength="40" placeholder="Leave empty if not raised yet"></div><div><label class="f" for="oSup">Supplier</label><input id="oSup" class="in1" type="text" maxlength="60"></div></div>';
+  h += '<div class="mut" style="font-size:12px">Ordered by <b style="color:#0B1F3A">' + esc(S.me) + '</b> · saved with today’s date and time</div></div>';
+  h += '<div class="bar"><button class="btn" data-act="saveOrder">Save part order</button></div>';
+  return { html: h, tab: 'x' };
 }
 function vDue() {
   var t0 = today0(), items = S.due.slice().sort(function (a, b) { return a.due - b.due; });
@@ -387,6 +437,8 @@ function render() {
   else if (r === 'snag') out = vSnag(p[1]);
   else if (r === 'add') out = vAdd(p[1]);
   else if (r === 'parts') out = vParts();
+  else if (r === 'part') out = vPart(Number(p[1]));
+  else if (r === 'order') out = vOrder(p[1]);
   else if (r === 'due') out = vDue();
   else if (r === 'alerts') out = vAlerts();
   else out = vFleet();
@@ -399,16 +451,29 @@ window.addEventListener('hashchange', render);
 /* ---------- actions ---------- */
 function engSheet() {
   modal('<h2>Who is using the app?</h2>' + S.engs.map(function (n) { return '<button class="opt' + (n === S.me ? ' on' : '') + '" data-act="pick" data-v="' + esc(n) + '"><span class="av">' + esc(ini(n)) + '</span>' + esc(n) + '</button>'; }).join('') +
-    '<div class="two"><div><label class="f" for="newEng">Add a name</label><input id="newEng" class="in1" type="text" maxlength="30" placeholder="e.g. P. Mondlane"></div><div style="flex:none;align-self:flex-end"><button class="btn" data-act="addEng">Add</button></div></div><button class="btn o" data-act="close">Close</button>');
+    '<div class="two"><div><label class="f" for="newEng">Add a name</label><input id="newEng" class="in1" type="text" maxlength="30" placeholder="e.g. Mark Taylor"></div><div style="flex:none;align-self:flex-end"><button class="btn" data-act="addEng">Add</button></div></div><button class="btn o" data-act="close">Close</button>');
 }
 function updSheet(id) {
   var s = S.snags.filter(function (x) { return x.id === id; })[0]; if (!s) return;
   modal('<h2>Update ' + esc(s.id) + '</h2><div><label class="f" for="upNote">Note</label><textarea id="upNote" class="in1" placeholder="What was done or found?"></textarea></div><div><label class="f" for="upSt">Status</label><select id="upSt" class="in1">' + ['Open', 'Awaiting part', 'Deferred', 'Closed'].map(function (x) { return '<option' + (x === s.st ? ' selected' : '') + '>' + x + '</option>'; }).join('') + '</select></div><div class="mut" style="font-size:12px">Signed by <b style="color:#0B1F3A">' + esc(S.me) + '</b></div><button class="btn" data-act="saveUpd" data-id="' + esc(id) + '">Save update</button><button class="btn o" data-act="close">Cancel</button>');
 }
-function advSheet(i) {
+function procSheet(i) {
   var p = S.parts[i]; if (!p) return;
-  var nx = p.stage + 1; if (nx > 3) return;
-  modal('<h2>' + esc(p.desc) + '</h2><div class="mut">' + esc(p.pn) + ' · ' + p.ac + '</div><div style="font-size:15px">Move from <b>' + STAGES[p.stage] + '</b> to <b>' + STAGES[nx] + '</b>?</div>' + (nx < 3 ? '<div><label class="f" for="etaIn">ETA (optional)</label><input id="etaIn" class="in1" type="text" maxlength="20" placeholder="e.g. 12 Nov" value="' + esc(p.eta) + '"></div>' : '') + '<button class="btn" data-act="doAdv" data-i="' + i + '">Move to ' + STAGES[nx] + '</button><button class="btn o" data-act="close">Cancel</button>');
+  modal('<h2>Procurement update</h2><div class="mut">' + esc(p.desc) + ' · ' + esc(p.pn) + '</div>' +
+    '<div><label class="f" for="prStage">Stage</label><select id="prStage" class="in1">' + STAGES.map(function (x, n) { return '<option value="' + n + '"' + (n === p.stage ? ' selected' : '') + '>' + x + '</option>'; }).join('') + '</select></div>' +
+    '<div><label class="f" for="prReq">Veryon requisition number</label><input id="prReq" class="in1 mono" type="text" maxlength="40" value="' + esc(p.req) + '"></div>' +
+    '<div class="two"><div><label class="f" for="prSup">Supplier</label><input id="prSup" class="in1" type="text" maxlength="60" value="' + esc(p.sup) + '"></div><div><label class="f" for="prEta">ETA</label><input id="prEta" class="in1" type="text" maxlength="20" placeholder="e.g. 12 Nov" value="' + esc(p.eta) + '"></div></div>' +
+    '<div><label class="f" for="prNote">Update note</label><textarea id="prNote" class="in1" placeholder="e.g. Quote received, PO sent"></textarea></div>' +
+    '<div class="mut" style="font-size:12px">Signed by <b style="color:#0B1F3A">' + esc(S.me) + '</b></div><button class="btn" data-act="saveProc" data-i="' + i + '">Save update</button><button class="btn o" data-act="close">Cancel</button>');
+}
+function editSheet(i) {
+  var p = S.parts[i]; if (!p) return;
+  modal('<h2>Edit part details</h2>' +
+    '<div><label class="f" for="eDesc">Part name</label><input id="eDesc" class="in1" type="text" maxlength="80" value="' + esc(p.desc) + '"></div>' +
+    '<div class="two"><div><label class="f" for="ePn">Part number (P/N)</label><input id="ePn" class="in1 mono" type="text" maxlength="40" value="' + esc(p.pn) + '"></div><div><label class="f" for="eSer">Serial number (S/N)</label><input id="eSer" class="in1 mono" type="text" maxlength="40" value="' + esc(p.sn) + '"></div></div>' +
+    '<div class="two"><div><label class="f" for="eCore">Core available</label><select id="eCore" class="in1">' + optList(CORES, p.core) + '</select></div><div><label class="f" for="eQty">Quantity</label><input id="eQty" class="in1 mono" type="number" min="1" value="' + esc(p.qty) + '"></div></div>' +
+    '<div class="two"><div><label class="f" for="eRea">Reason for spare</label><select id="eRea" class="in1">' + optList(REASONS, p.reason) + '</select></div><div><label class="f" for="eUrg">Urgency</label><select id="eUrg" class="in1">' + optList(URGS, p.urg) + '</select></div></div>' +
+    '<button class="btn" data-act="saveEdit" data-i="' + i + '">Save details</button><button class="btn o" data-act="close">Cancel</button>');
 }
 function val(id) { var e = $('#' + id); return e ? e.value.trim() : ''; }
 
@@ -437,21 +502,49 @@ document.addEventListener('click', function (e) {
     if (st === 'Closed' && s.pri === 'AOG') { var other = S.snags.some(function (x) { return x.ac === s.ac && x.id !== s.id && x.pri === 'AOG' && x.st !== 'Closed'; }); var a = S.ac.filter(function (x) { return x.reg === s.ac; })[0]; if (a && !other && a.st === 'AOG') a.st = 'Limited'; }
     save(); closeModal(); render(); toast('Snag updated');
   }
-  else if (act === 'adv') advSheet(Number(el.getAttribute('data-i')));
-  else if (act === 'doAdv') {
+  else if (act === 'proc') procSheet(Number(el.getAttribute('data-i')));
+  else if (act === 'editp') editSheet(Number(el.getAttribute('data-i')));
+  else if (act === 'saveProc') {
     var p = S.parts[Number(el.getAttribute('data-i'))]; if (!p) return;
-    p.stage += 1; var eta = $('#etaIn'); if (eta) p.eta = eta.value.trim();
-    addAlert('Part ' + STAGES[p.stage].toLowerCase() + ': ' + p.desc + (p.stage < 3 && p.eta ? ', ETA ' + p.eta : ''));
-    var sn = S.snags.filter(function (x) { return x.id === p.snag; })[0];
-    if (sn) { sn.log.push({ t: Date.now(), who: S.me, text: 'Part ' + STAGES[p.stage].toLowerCase() + ': ' + p.desc }); if (p.stage === 3 && sn.st === 'Awaiting part' && !S.parts.some(function (x) { return x.snag === sn.id && x.stage < 3; })) sn.st = 'Open'; }
-    save(); closeModal(); render(); toast('Part moved to ' + STAGES[p.stage]);
+    var oldReq = p.req, oldStage = p.stage, ns = Number(val('prStage')), req = val('prReq'), sup = val('prSup'), eta = val('prEta'), note = val('prNote'), bits = [];
+    if (req && !oldReq && ns === 0) ns = 1;
+    if (req !== oldReq) { bits.push('Veryon requisition ' + (req || 'cleared')); p.req = req; }
+    if (sup !== p.sup) { bits.push('Supplier: ' + (sup || 'cleared')); p.sup = sup; }
+    if (eta !== p.eta) { bits.push('ETA: ' + (eta || 'cleared')); p.eta = eta; }
+    if (ns !== oldStage) { bits.push('Stage: ' + STAGES[ns]); p.stage = ns; }
+    if (note) bits.push(note);
+    if (!bits.length) { toast('Nothing changed'); return; }
+    p.log.push({ t: Date.now(), who: S.me, text: bits.join(' · ') });
+    if (ns !== oldStage) {
+      addAlert('Part ' + STAGES[ns].toLowerCase() + ': ' + p.desc + (ns >= 2 && ns < 4 && p.eta ? ', ETA ' + p.eta : ''));
+      var sg = S.snags.filter(function (x) { return x.id === p.snag; })[0];
+      if (sg) { sg.log.push({ t: Date.now(), who: S.me, text: 'Part ' + STAGES[ns].toLowerCase() + ': ' + p.desc }); if (ns === 4 && sg.st === 'Awaiting part' && !S.parts.some(function (x) { return x.snag === sg.id && x.stage < 4; })) sg.st = 'Open'; }
+    }
+    save(); closeModal(); render(); toast('Update saved');
+  }
+  else if (act === 'saveEdit') {
+    var q = S.parts[Number(el.getAttribute('data-i'))]; if (!q) return;
+    var nd = val('eDesc'); if (!nd) { toast('Part name cannot be empty'); return; }
+    q.desc = nd; q.pn = val('ePn') || 'TBC'; q.sn = val('eSer'); q.core = val('eCore'); q.qty = Math.max(1, Number(val('eQty')) || 1); q.reason = val('eRea'); q.urg = val('eUrg');
+    q.log.push({ t: Date.now(), who: S.me, text: 'Part details edited' });
+    save(); closeModal(); render(); toast('Details saved');
+  }
+  else if (act === 'saveOrder') {
+    var od = val('oDesc'); if (!od) { toast('Please enter the part name'); var oe = $('#oDesc'); if (oe) oe.focus(); return; }
+    var oreq = val('oReq'), osn = val('oSn');
+    var np = { pn: val('oPn') || 'TBC', desc: od, sn: val('oSer'), core: val('oCore'), qty: Math.max(1, Number(val('oQty')) || 1), ac: val('oAc'), snag: osn, stage: oreq ? 1 : 0, eta: '', reason: val('oRea'), urg: val('oUrg'), req: oreq, sup: val('oSup'), log: [{ t: Date.now(), who: S.me, text: 'Part order created' + (oreq ? ' · Veryon requisition ' + oreq : '') }] };
+    S.parts.push(np);
+    var osg = S.snags.filter(function (x) { return x.id === osn; })[0];
+    if (osg) { osg.log.push({ t: Date.now(), who: S.me, text: 'Part ordered: ' + od }); if (osg.st === 'Open') osg.st = 'Awaiting part'; }
+    addAlert('New part order: ' + od + ' (' + np.urg + ')');
+    save(); location.hash = '#/part/' + (S.parts.length - 1); toast('Part order saved');
   }
   else if (act === 'saveAdd') {
     var title = val('fTtl'); if (!title) { toast('Please enter a short title'); var t = $('#fTtl'); if (t) t.focus(); return; }
     var reg = val('fAc'), sid = 'S-' + ('000' + S.seq++).slice(-4), need = $('#needPart') && $('#needPart').checked, pn = val('fPn'), pd = val('fPd');
     var snag = { id: sid, ac: reg, ata: val('fAta'), title: title, pri: addPri, st: need ? 'Awaiting part' : 'Open', by: S.me, ts: Date.now(), desc: val('fDesc'), photos: ADDPH.length, log: [{ t: Date.now(), who: S.me, text: 'Snag reported' }] };
     S.snags.unshift(snag); PH[sid] = ADDPH.slice();
-    if (need) S.parts.push({ pn: pn || 'TBC', desc: pd || title, qty: Math.max(1, Number(val('fQty')) || 1), ac: reg, snag: sid, stage: 0, eta: '' });
+    if (need) S.parts.push({ pn: pn || 'TBC', desc: pd || title, sn: val('fSer'), core: val('fCore'), qty: Math.max(1, Number(val('fQty')) || 1), ac: reg, snag: sid, stage: 0, eta: '', reason: 'Defect', urg: addPri === 'AOG' ? 'AOG' : (addPri === 'High' ? 'Urgent' : 'Routine'), req: '', sup: '', log: [{ t: Date.now(), who: S.me, text: 'Part order created' }] });
     if (addPri === 'AOG') { var ac = S.ac.filter(function (x) { return x.reg === reg; })[0]; if (ac) ac.st = 'AOG'; }
     addAlert('New snag ' + sid + ' on ' + reg + ': ' + title);
     save(); location.hash = '#/snag/' + sid; toast('Snag saved');
